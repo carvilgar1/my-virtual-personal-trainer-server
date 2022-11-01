@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "8000:5000"
+  db:
+    image: "mongo:6.0.2-focal"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=root-db
+    expose:
+      - "27017"
+    volumes:
+      - ./mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo/mongod.conf:/etc/mongod.conf:ro
+      - ./mongo/mongo-volume:/data/db
+
+networks:
+  default:
