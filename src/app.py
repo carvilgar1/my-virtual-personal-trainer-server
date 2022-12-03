@@ -1,25 +1,26 @@
 from flask import Flask, request, jsonify
-from models.status import status
 from db_connection_manager import connect_bd,disconnect_bd
-from repositories.user_repository import find_user, insert_user
-from models.user import User
+from repositories.user_repository import insert_user, is_email_already_register, are_valid_credentials
+from models.user import User, AuthCredentials
+from models.status import status
 
 app = Flask(__name__)
 
 @app.route('/sign_up', methods = ['POST'])
 def sign_up():
+    form = request.form
+
     try:
-        form = request.form
-        #Form data validation
-        User(_id = None, **form)
+        user = User(**form)
+        user.auth_credentials.encrypt_user_credentials()
     except ValueError as e:
         return jsonify({"status": status.BAD_REQUEST, "description": "{0}".format(e)}), 400
     
     conn = connect_bd()
-    if find_user(conn, email=form['email']): 
+    if is_email_already_register(conn, user.auth_credentials.email): 
        _status, des, code = status.FORBIDDEN, "User already register", 403
     else:
-        insert_user(conn, **form)
+        insert_user(conn, **user.to_json())
         _status, des, code = status.OK, "User has been registered satisfactorily", 201
     disconnect_bd(conn)
     return jsonify({"status": _status, "description": des}), code
@@ -27,13 +28,15 @@ def sign_up():
 @app.route('/sign_in', methods = ['POST'])
 def sign_in():
     form = request.form
-    if 'email' not in form:
-        return jsonify({"status": status.BAD_REQUEST, "description": "Email can't be empty or blank"}), 400
-    if 'password' not in form:
-        return jsonify({"status": status.BAD_REQUEST, "description": "Password can't be empty or blank"}), 400
+
+    try:
+        auth_credentials = AuthCredentials(**form)
+        auth_credentials.encrypt_user_credentials()
+    except ValueError as e:
+        return jsonify({"status": status.BAD_REQUEST, "description": "{0}".format(e)}), 400
     
     conn = connect_bd()
-    if find_user(conn, **form): 
+    if are_valid_credentials(conn, auth_credentials): 
         _status, des, code =  status.OK, "Successfully logged in user", 200
     else:
         _status, des, code =  status.UNAUTHORIZED, "Wrong credentials", 401

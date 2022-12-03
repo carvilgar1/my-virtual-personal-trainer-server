@@ -1,17 +1,16 @@
 from datetime import datetime
 from re import fullmatch
+from hashlib import sha256
 
 _EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 _DATE_REGEX = r"%d/%m/%Y"
 
 class User():
-    def __init__(self, _id, name, sur_name, email, birth_date, password, weight, height, activity_level) -> None:
-        self._id = _id
+    def __init__(self, name, sur_name, email, birth_date, password, weight, height, activity_level) -> None:
         self.name = self._is_valid_name(name)
         self.sur_name = self._is_valid_surname(sur_name)
-        self.email = self._is_valid_email(email)
+        self.auth_credentials = AuthCredentials(email, password)
         self.birth_date = self._is_valid_birth_date(birth_date)
-        self.password = self._is_valid_password(password)
         self.weight = self._is_valid_weight(weight)
         self.height = self._is_valid_height(height)
         self.activity_level = self._is_valid_activity_level(activity_level)
@@ -25,11 +24,10 @@ class User():
 
     def to_json(self):
         return  {
-                "id": str(self._id), 
                 "name": self.name, 
                 "surname": self.sur_name,
-                "email": self.email,
                 "birth_date": self.birth_date,
+                "auth_credentials": self.auth_credentials.to_json(),
                 "weight": self.weight,
                 "height": self.height,
                 "activity_level": self.activity_level
@@ -45,22 +43,10 @@ class User():
             raise ValueError("surname can't be empty or blank")
         return surname
 
-    def _is_valid_email(self, email):
-        if not(email or email.strip()):
-            raise ValueError("email can't be empty or blank")
-        if not fullmatch(_EMAIL_REGEX, email):
-            raise ValueError("email {0} does not match format {1}".format(email, _EMAIL_REGEX))
-        return email
-
     def _is_valid_birth_date(self, birth_date):
         if not(birth_date or birth_date.strip()):
             raise ValueError("birth_date can't be empty or blank")
         return datetime.strptime(birth_date, _DATE_REGEX)
-
-    def _is_valid_password(self, password):
-        if not(password or password.strip()):
-            raise ValueError("password can't be empty or blank")
-        return password
 
     def _is_valid_weight(self, weight):
         weight = float(weight)
@@ -79,6 +65,33 @@ class User():
         if not activity_level in range(5):
             raise ValueError("activity_level must be a integer between 0 and 4")
         return activity_level
+
+class AuthCredentials():
+    def __init__(self, email, password):
+        self.email = self._is_valid_email(email)
+        self.password = self._is_valid_password(password)
+
+    def _is_valid_password(self, password):
+        if not(password or password.strip()):
+            raise ValueError("password can't be empty or blank")
+        return password
+
+    def _is_valid_email(self, email):
+        if not(email or email.strip()):
+            raise ValueError("email can't be empty or blank")
+        if not fullmatch(_EMAIL_REGEX, email):
+            raise ValueError("email {0} does not match format {1}".format(email, _EMAIL_REGEX))
+        return email
+
+    def to_json(self):
+        return  {
+                    "email": self.email,
+                    "password": self.password
+                }
+
+    def encrypt_user_credentials(self):
+        self.email = sha256(self.email.encode("utf-8")).hexdigest()
+        self.password = sha256(self.password.encode("utf-8")).hexdigest()
     
 
         
