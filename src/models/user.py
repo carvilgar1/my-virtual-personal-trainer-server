@@ -2,7 +2,7 @@ from datetime import datetime
 from re import fullmatch
 
 _EMAIL_REGEX = r"^\S+@\S+\.\S+$"
-_DATE_REGEX = r"^\S+@\S+\.\S+$"
+_DATE_REGEX = r"%d/%m/%Y"
 
 class User():
     def __init__(self, _id, name, sur_name, email, birth_date, password, weight, height, activity_level) -> None:
@@ -49,19 +49,18 @@ class User():
         if not(email or email.strip()):
             raise ValueError("email can't be empty or blank")
         if not fullmatch(_EMAIL_REGEX, email):
-            raise ValueError("email format isn't correct")
+            raise ValueError("email {0} does not match format {1}".format(email, _EMAIL_REGEX))
         return email
 
     def _is_valid_birth_date(self, birth_date):
         if not(birth_date or birth_date.strip()):
             raise ValueError("birth_date can't be empty or blank")
-        if not fullmatch(_DATE_REGEX, birth_date):
-            raise ValueError("birth_date format isn't correct")
         return datetime.strptime(birth_date, _DATE_REGEX)
 
     def _is_valid_password(self, password):
         if not(password or password.strip()):
             raise ValueError("password can't be empty or blank")
+        return password
 
     def _is_valid_weight(self, weight):
         weight = float(weight)
@@ -80,10 +79,6 @@ class User():
         if not activity_level in range(5):
             raise ValueError("activity_level must be a integer between 0 and 4")
         return activity_level
-    
-    #@override
-    def get_id(self):         
-        return str(self.id)
     
 
         

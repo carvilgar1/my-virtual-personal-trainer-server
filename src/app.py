@@ -9,11 +9,11 @@ app = Flask(__name__)
 @app.route('/sign_up', methods = ['POST'])
 def sign_up():
     try:
-        #Form data validation
         form = request.form
+        #Form data validation
         User(_id = None, **form)
     except ValueError as e:
-        return jsonify({"status": status.BAD_REQUEST, 'description': '{0}'.format(e)}), 400
+        return jsonify({"status": status.BAD_REQUEST, "description": "{0}".format(e)}), 400
     
     conn = connect_bd()
     if find_user(conn, email=form['email']): 
