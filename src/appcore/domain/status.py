@@ -1,6 +1,6 @@
 from enum import Enum
 
-class status(str,Enum):
+class Status(str,Enum):
     OK = "OK"
     CREATED = "CREATED"
     BAD_REQUEST = "BAD_REQUEST"
