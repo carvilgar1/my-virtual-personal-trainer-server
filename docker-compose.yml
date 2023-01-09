@@ -2,6 +2,11 @@ version: "3.9"
 services:
   web:
     build: .
+    environment:
+      - URL=mongodb://db:27017
+      - USER=root
+      - PASSWORD=root
+      - DB_NAME=my_virtual_personal_trainer
     ports:
       - "8000:5000"
   db:

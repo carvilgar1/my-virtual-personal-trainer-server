@@ -6,14 +6,15 @@ _EMAIL_REGEX = r"^\S+@\S+\.\S+$"
 _DATE_REGEX = r"%d/%m/%Y"
 
 class User():
-    def __init__(self, name, sur_name, email, birth_date, password, weight, height, activity_level) -> None:
-        self.name = self._is_valid_name(name)
-        self.sur_name = self._is_valid_surname(sur_name)
-        self.auth_credentials = AuthCredentials(email, password)
-        self.birth_date = self._is_valid_birth_date(birth_date)
-        self.weight = self._is_valid_weight(weight)
-        self.height = self._is_valid_height(height)
-        self.activity_level = self._is_valid_activity_level(activity_level)
+    def __init__(self, _id, name, surname, birth_date, auth_credentials, weight, height, activity_level) -> None:
+        self._id = _id
+        self.name = name
+        self.surname = surname
+        self.auth_credentials = auth_credentials
+        self.birth_date = birth_date
+        self.weight = weight
+        self.height = height
+        self.activity_level = activity_level
 
     def get_user_age(self):
         today = datetime.now()
@@ -23,28 +24,29 @@ class User():
         return self.weight / self.height**2
 
     def to_json(self):
-        return  {
-                "name": self.name, 
-                "surname": self.sur_name,
-                "birth_date": self.birth_date,
-                "auth_credentials": self.auth_credentials.to_json(),
-                "weight": self.weight,
-                "height": self.height,
-                "activity_level": self.activity_level
-                }
+        return {
+            "_id": self._id,
+            "name": self.name,
+            "surname": self.surname,
+            "birth_date": self.birth_date,
+            "auth_credentials": self.auth_credentials.__dict__,
+            "weight": self.weight,
+            "height": self.height,
+            "activity_level": self.activity_level
+        }
 
     def _is_valid_name(self, name):
-        if not(name or name.strip()): #Name not empty or blank
+        if not (name or name.strip()):  # Name not empty or blank
             raise ValueError("name can't be empty or blank")
         return name
 
     def _is_valid_surname(self, surname):
-        if not(surname or surname.strip()):
+        if not (surname or surname.strip()):
             raise ValueError("surname can't be empty or blank")
         return surname
 
     def _is_valid_birth_date(self, birth_date):
-        if not(birth_date or birth_date.strip()):
+        if not (birth_date or birth_date.strip()):
             raise ValueError("birth_date can't be empty or blank")
         return datetime.strptime(birth_date, _DATE_REGEX)
 
@@ -62,9 +64,11 @@ class User():
 
     def _is_valid_activity_level(self, activity_level):
         activity_level = int(activity_level)
-        if not activity_level in range(5):
-            raise ValueError("activity_level must be a integer between 0 and 4")
+        if activity_level not in range(5):
+            raise ValueError(
+                "activity_level must be a integer between 0 and 4")
         return activity_level
+
 
 class AuthCredentials():
     def __init__(self, email, password):
@@ -72,26 +76,18 @@ class AuthCredentials():
         self.password = self._is_valid_password(password)
 
     def _is_valid_password(self, password):
-        if not(password or password.strip()):
+        if not (password or password.strip()):
             raise ValueError("password can't be empty or blank")
         return password
 
     def _is_valid_email(self, email):
-        if not(email or email.strip()):
+        if not (email or email.strip()):
             raise ValueError("email can't be empty or blank")
         if not fullmatch(_EMAIL_REGEX, email):
-            raise ValueError("email {0} does not match format {1}".format(email, _EMAIL_REGEX))
+            raise ValueError(
+                f"email {email} does not match format {_EMAIL_REGEX}")
         return email
-
-    def to_json(self):
-        return  {
-                    "email": self.email,
-                    "password": self.password
-                }
 
     def encrypt_user_credentials(self):
         self.email = sha256(self.email.encode("utf-8")).hexdigest()
         self.password = sha256(self.password.encode("utf-8")).hexdigest()
-    
-
-        
