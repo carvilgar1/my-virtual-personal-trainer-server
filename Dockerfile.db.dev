@@ -1,9 +1,0 @@
-FROM mongo:5.0.31-focal
-
-# Copia los scripts de inicialización
-COPY init-db.js /docker-entrypoint-initdb.d/
-
-ENV MONGO_INITDB_ROOT_USERNAME=dev
-ENV MONGO_INITDB_ROOT_PASSWORD=dev
-
-EXPOSE 27017
