@@ -57,6 +57,135 @@ Provides an intuitive and flexible way to serve AI predictions and manage user i
 A NoSQL database that stores workout history and user data in a flexible JSON-like format.
 Optimized for scalability and real-time interactions with the REST API.
 
+## 📁 Project Structure
+
+- `src/app.py`: Main application file containing the Flask application setup, routes, and business logic.
+- `Dockerfile.app`: Defines the Docker image for the application service.
+- `Dockerfile.db`: Defines the Docker image for the database service.
+- `docker-compose.yml`: Orchestrates the application and database services.
+- `.env`: Environment variablses. This file must be created based on example.
+
+## 🚀 Setup Instructions 🌚
+### Creating the Admin User
+
+To have an admin user in your database, you have two options:
+
+1. **Automatically via init-db.js:**  
+Add the following block to your `init-db.js` file in project root so that the admin user is created automatically when the MongoDB container starts:
+
+    ```javascript
+    use dbname
+    dbname.createUser({
+        user: "user",
+        pwd: "pass",
+        roles: [
+            { role: "readWrite", db: "dbname" },
+            { role: "dbAdmin", db: "dbname" }
+        ]
+    });
+    ```
+
+Replace `"user"`, `"pass"` and `"dbname"` with your desired admin credentials. **⚠️Warning:** Must be same as .env file or docker enviroment variables
+
+2. **Manually via docker exec:**
+
+Alternatively, you can create the admin user manually after the containers are up:
+
+a. Start the containers in detached mode:
+
+    ```bash
+    docker-compose up --build -d
+    ```
+
+b. Access the MongoDB container:
+
+    ```bash
+    docker exec -it <db_container_name> mongo -u user -p user --authenticationDatabase admin
+    ```
+
+Replace `<db_container_name>` with the name of your MongoDB container (use `docker ps` to list container names). Replace `"user"` and `"pass"` with your desired admin credentials. **⚠️Warning:** Must be same as .env file or docker enviroment variables
+
+c. In the MongoDB shell, switch to your database and create the admin user:
+
+    ```javascript
+    use dbname
+    dbname.createUser({
+        user: "user",
+        pwd: "pass",
+        roles: [
+            { role: "readWrite", db: "dbname" },
+            { role: "dbAdmin", db: "dbname" }
+        ]
+    });
+    ```
+
+Replace `"user"`, `"pass"` and `"dbname"` with your desired admin credentials. **⚠️Warning:** Must be same as .env file or docker enviroment variables
+
+To set up and start all services with a custom `.env` file from the root of the project, follow these steps:
+
+1. Create a `.env` file in the root directory of the project based on the `.env.example` template. You can use the following parameters:
+
+   ```
+   DB_USER=your_db_user
+   DB_PASSWORD=your_db_password
+   DB_HOST=db
+   DB_PORT=27017
+   DB_NAME=your_db_name
+   HTTP_PORT=8080
+   SECRET_KEY=your_secret_key
+   REFRESH_KEY=your_refresh_key
+   ```
+
+   Replace `your_db_user`, `your_db_password`, `your_db_name`, `your_secret_key`, and `your_refresh_key` with your desired values.
+
+   **⚠️Warning:** It is not recommended to modify the `DB_HOST` if you are launching the services directly from Docker Compose. The `DB_HOST` should only be modified if you are running the services separately.
+
+2. Open a terminal and navigate to the root directory of the project.
+
+3. Run the following command to start the services using Docker Compose:
+
+   ```
+   docker-compose up --build
+   ```
+
+   This command builds the images for the application and database services and starts the containers.
+
+4. Access the application at `http://localhost:8080/ping` in your web browser.
+
+5. To stop the services, you can use `CTRL+C` in the terminal or run:
+
+   ```
+   docker-compose down
+   ```
+
+### Aternative Setup
+To set up and start all services with custom environment variables, follow these steps:
+
+1. Open a terminal and navigate to the root directory of the project.
+
+2. Run the following command to start the services using Docker Compose with custom environment variables:
+
+   ```bash
+   DB_USER=your_db_user DB_PASSWORD=your_db_password DB_HOST=db DB_PORT=27017 DB_NAME=your_db_name HTTP_PORT=8080 SECRET_KEY=your_secret_key REFRESH_KEY=your_refresh_key docker-compose up --build
+   ```
+
+   **⚠️Warning:** It is not recommended to modify the `DB_HOST` if you are launching the services directly from Docker Compose. The `DB_HOST` should only be modified if you are running the services separately.
+
+   Replace `your_db_user`, `your_db_password`, `your_db_name`, `your_secret_key`, and `your_refresh_key` with your desired values.
+
+3. Access the application at `http://localhost:8080/ping` in your web browser.
+
+4. To stop the services, you can use `CTRL+C` in the terminal or run:
+
+   ```bash
+   docker-compose down
+   ```
+
+5. **Complete Uninstallation:** To completely uninstall the services and remove all data, including user profiles and exercise logs, you need to delete the Docker volumes. This will erase all data stored in the database. Run the following command:
+
+   ```bash
+   docker-compose down -v
+   ```
 
 ## 📬 Contact
 
