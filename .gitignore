@@ -167,4 +167,4 @@ cython_debug/
 #.idea/
 
 # MongoDB init script
-mongo-init.js
+init-db.js
