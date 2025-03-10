@@ -7,9 +7,9 @@ on:
       - dev
 
 jobs:
-    test:
-      environment: CICD integration
-      runs-on: ubuntu-latest
+  test:
+    environment: CICD integration
+    runs-on: ubuntu-latest
 
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
