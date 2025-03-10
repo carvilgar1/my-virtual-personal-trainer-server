@@ -1,0 +1,27 @@
+services:
+  app:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    ports:
+      - '${HTTP_PORT}:5000'
+    depends_on:
+      - db
+
+  db:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:27017"
+    volumes:
+      - mongo_data:/data/db
+volumes:
+  mongo_data:
