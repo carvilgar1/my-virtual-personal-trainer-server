@@ -7,10 +7,18 @@ on:
       - dev
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+      environment: CICD integration
+      runs-on: ubuntu-latest
 
     env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      REFRESH_KEY: ${{ secrets.REFRESH_KEY }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
       PYTHONPATH: ${{ github.workspace }}/src
 
     steps:
