@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      SECRET_KEY: ${{ environment.SECRET_KEY }}
+      REFRESH_KEY: ${{ environment.REFRESH_KEY }}
+      DB_USER: ${{ environment.DB_USER }}
+      DB_PASSWORD: ${{ environment.DB_PASSWORD }}
+      DB_HOST: ${{ environment.DB_HOST }}
+      DB_PORT: ${{ environment.DB_PORT }}
+      DB_NAME: ${{ environment.DB_NAME }}
       PYTHONPATH: ${{ github.workspace }}/src
 
     steps:
