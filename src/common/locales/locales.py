@@ -3,7 +3,7 @@ from src.constants import CommonErrorCodes
 COMMON_LOCALES = {
     'en': {
         CommonErrorCodes.UNKNOWN_ERROR: 'An unknown error occurred, please contact customer support',
-        CommonErrorCodes.MANDATORY_FIELD: 'The field is required',
+        CommonErrorCodes.MISSING_MANDATORY_FIELD: 'The field is required',
         CommonErrorCodes.INVALID_INTEGER: 'The field must be an integer',
         CommonErrorCodes.INVALID_FLOAT: 'The field must be a float',
         CommonErrorCodes.INVALID_DATE: 'The field must be a valid date, format YYYY-MM-DD is expected',
@@ -14,7 +14,7 @@ COMMON_LOCALES = {
     },
     'es': {
         CommonErrorCodes.UNKNOWN_ERROR: 'Ocurrió un error desconocido, por favor contacte al soporte técnico',
-        CommonErrorCodes.MANDATORY_FIELD: 'El campo es requerido',
+        CommonErrorCodes.MISSING_MANDATORY_FIELD: 'El campo es requerido',
         CommonErrorCodes.INVALID_INTEGER: 'El campo debe ser un entero',
         CommonErrorCodes.INVALID_FLOAT: 'El campo debe ser un decimal',
         CommonErrorCodes.INVALID_DATE: 'El campo debe ser una fecha válida, se espera el formato YYYY-MM-DD',

@@ -1,9 +1,8 @@
 import re
 
-from src.common.application.localizations import ErrorLocalizable
 from src.common.application.validations import (FieldValidator,
                                                 validate_mandatory_field)
-from src.common.domain import Error
+from src.common.domain import Error, errors
 from src.constants import (EMAIL_PATTERN, PASSWORD_ALLOWED_SYMBOLS,
                            PASSWORD_MIN_LENGTH, CommonErrorCodes,
                            SignUpErrorCodes)
@@ -20,7 +19,7 @@ def init_email_error_localizable(code: str, locale_id: str, default_message: str
 
 
 def init_form_field_error_localizable(code: str, locale_id: str, default_message: str, form_field: str):
-    return ErrorLocalizable(code, locale_id, default_message, form_field)
+    return errors.ErrorLocalizable(code, locale_id, default_message, form_field)
 
 
 class PasswordValidator(FieldValidator):
@@ -128,7 +127,7 @@ class SignUpValidator:
             code = CommonErrorCodes.FORM_CONTAINS_ERRORS
             locale_id = CommonErrorCodes.FORM_CONTAINS_ERRORS
             default_message = 'Form contains errors'
-            return ErrorLocalizable(code, locale_id, default_message, errors=self.__errors)
+            return errors.ErrorLocalizable(code, locale_id, default_message, errors=self.__errors)
         return None
 
     def __validate_username(self):

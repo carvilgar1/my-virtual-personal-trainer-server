@@ -2,12 +2,14 @@ from flask import Flask, jsonify
 
 from src.settings import APP_REPOSITORIES, LOCALIZER
 from src.sign_up.controllers.controllers import sign_up_blueprint
+from src.token.controllers.controllers import token_blueprint
 
 app = Flask(__name__)
 app.config['APP_REPOSITORIES'] = APP_REPOSITORIES
 app.config['LOCALIZER'] = LOCALIZER
 
 app.register_blueprint(sign_up_blueprint)
+app.register_blueprint(token_blueprint)
 
 
 @app.route('/ping', methods=['GET'])

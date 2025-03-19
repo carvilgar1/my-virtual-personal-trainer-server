@@ -25,14 +25,31 @@ class UserCredentialsMongoDBRepository(UserCredentialsRepository):
     def find_by_username(self, username: str) -> Optional[UserCredentials]:
         user_credentials = self.collection.find_one(
             {'credentials.username': username})
-        return user_credentials
+        if not user_credentials:
+            return None
+        return self.__build_user_credentials(user_credentials)
 
     def find_by_email(self, email: str) -> Optional[UserCredentials]:
         user_credentials = self.collection.find_one(
             {'credentials.email': email})
+
+        if user_credentials:
+            user_credentials['_id'] = str(user_credentials['_id'])
+            user_credentials = UserCredentials(**user_credentials)
+
         return user_credentials
 
     def find_by_username_or_email(self, username: str, email: str) -> Optional[UserCredentials]:
         user_credentials = self.collection.find_one(
             {'$or': [{'credentials.username': username}, {'credentials.email': email}]})
-        return user_credentials
+        if not user_credentials:
+            return None
+        return self.__build_user_credentials(user_credentials)
+
+    def __build_user_credentials(self, user_credentials: dict) -> UserCredentials:
+        return UserCredentials(
+            str(user_credentials['_id']),
+            user_credentials['credentials']['email'],
+            user_credentials['credentials']['username'],
+            user_credentials['credentials']['password']
+        )

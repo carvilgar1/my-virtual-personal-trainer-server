@@ -1,8 +1,11 @@
 import unittest
 from unittest.mock import MagicMock
+
 from flask import Flask
-from src.sign_up.controllers.controllers import sign_up_blueprint
+
 from src.constants import DEFAULT_LANGUAGE
+from src.sign_up.controllers.controllers import sign_up_blueprint
+
 
 class TestSignUpIntegration(unittest.TestCase):
 

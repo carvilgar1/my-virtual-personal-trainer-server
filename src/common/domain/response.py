@@ -1,33 +1,9 @@
 from enum import Enum
+from typing import Iterator
 
-
-class Error:
-    def __init__(self, code: str, message: str, validation_field: str = None, errors: list['Error'] = None):
-        if not code:
-            raise ValueError("Error code must be set")
-        self.code = code
-        self.message = message
-        self.validation_field = validation_field
-        self.errors = errors
-
-    def add_error(self, error: 'Error'):
-        if not self.errors:
-            self.errors = []
-        self.errors.append(error)
-
-    def to_json(self):
-        error = {
-            'code': self.code,
-            'message': self.message
-        }
-
-        if self.validation_field:
-            error['validationField'] = self.validation_field
-
-        if self.errors:
-            error['errors'] = [error.to_json() for error in self.errors]
-
-        return error
+from src.common.application.localizations import (LocalizableProperty,
+                                                  LocalizableType)
+from src.common.domain.errors import Error
 
 
 class Status(Enum):
@@ -53,3 +29,13 @@ class Response:
             response['error'] = self.error.to_json()
 
         return response
+
+
+class ResponseLocalizable(Response, LocalizableType):
+
+    def __init__(self, status: Status = Status.SUCCESS, error: Error = None):
+        super().__init__(status, error)
+
+    def get_localizable_properties(self) -> Iterator[LocalizableProperty]:
+        if self.error and isinstance(self.error, LocalizableType):
+            yield from self.error.get_localizable_properties()

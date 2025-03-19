@@ -1,12 +1,10 @@
 import unittest
-from unittest.mock import MagicMock
 
-from src.common.application.localizations import (ErrorLocalizable,
-                                                  LocalesAggregator,
+from src.common.application.localizations import (LocalesAggregator,
                                                   LocalesNotLoadedError,
-                                                  Localizer,
-                                                  ResponseLocalizable)
-from src.common.domain.response import Error, Response, Status
+                                                  Localizer)
+from src.common.domain import (Error, ErrorLocalizable, ResponseLocalizable,
+                               Status)
 
 
 class LocalesAggregatorTests(unittest.TestCase):

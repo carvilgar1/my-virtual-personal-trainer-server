@@ -47,7 +47,7 @@ class TestValidations(unittest.TestCase):
         result, error = validate_mandatory_field("test_field", "")
         self.assertFalse(result)
         self.assertIsNotNone(error)
-        self.assertEqual(error.code, CommonErrorCodes.MANDATORY_FIELD)
+        self.assertEqual(error.code, CommonErrorCodes.MISSING_MANDATORY_FIELD)
 
     def test_validate_integer_success(self):
         result, error = validate_integer("123")

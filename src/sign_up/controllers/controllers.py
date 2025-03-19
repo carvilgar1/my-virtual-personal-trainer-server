@@ -1,9 +1,9 @@
 from bcrypt import gensalt, hashpw
 from flask import Blueprint, current_app, jsonify, request
 
-from src.common.application.localizations import (ErrorLocalizable, Localizer,
-                                                  ResponseLocalizable)
-from src.common.domain import Error, Response, Status
+from src.common.application.localizations import Localizer
+from src.common.domain import (Error, ErrorLocalizable, Response,
+                               ResponseLocalizable, Status)
 from src.constants import (DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM,
                            CommonErrorCodes, SignUpErrorCodes)
 from src.sign_up.application.validations import SignUpValidator
@@ -60,7 +60,7 @@ def _get_user_credentials() -> UserCredentials:
     email = form.get(UserCredentialsFormFields.EMAIL)
     username = form.get(UserCredentialsFormFields.USERNAME)
     password = form.get(UserCredentialsFormFields.PASSWORD)
-    return UserCredentials(email, username, password)
+    return UserCredentials(None, email, username, password)
 
 
 def __check_unique_credentials(user_credentials_repository: UserCredentialsRepository, user_credentials: UserCredentials) -> tuple[bool, Error]:

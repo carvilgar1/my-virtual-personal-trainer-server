@@ -2,9 +2,13 @@ import os
 
 from dotenv import load_dotenv
 
+from src import constants
 from src.common.application.localizations import LocalesAggregator, Localizer
 from src.common.locales.locales import COMMON_LOCALES
 from src.sign_up.locales.locales import SIGN_UP_LOCALES
+from src.token.application.jwt_authentication_service import \
+    JWTAuthenticationService
+from src.token.locales.locales import TOKEN_LOCALES
 from src.user_credentials.infrastructure.user_credentials_mongodb_repository import \
     UserCredentialsMongoDBRepository
 
@@ -45,6 +49,12 @@ DB_SETTINGS = {
 }
 
 # ==============================================
+# Authentication service
+# ==============================================
+AUTHENTICATION_SERVICE = JWTAuthenticationService(
+    SECRET_KEY, REFRESH_KEY, constants.ACCESS_TOKEN_EXPIRATION_HOURS, constants.REFRESH_TOKEN_EXPIRATION_DAYS, 'HS256')
+
+# ==============================================
 # Domain repositories
 # ==============================================
 USER_CREDENTIALS_REPOSITORY = UserCredentialsMongoDBRepository(DB_SETTINGS)
@@ -57,10 +67,12 @@ APP_REPOSITORIES = {
 # ==============================================
 locales_aggregator = LocalesAggregator()
 locales_aggregator.add_locales(COMMON_LOCALES)\
-    .add_locales(SIGN_UP_LOCALES)
+    .add_locales(SIGN_UP_LOCALES)\
+    .add_locales(TOKEN_LOCALES)
 
 # Remove the locales from the global scope
 del COMMON_LOCALES
 del SIGN_UP_LOCALES
+del TOKEN_LOCALES
 
 LOCALIZER = Localizer(locales_aggregator.application_locales)
