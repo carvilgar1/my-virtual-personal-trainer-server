@@ -51,15 +51,15 @@ DB_SETTINGS = {
 # ==============================================
 # Authentication service
 # ==============================================
-AUTHENTICATION_SERVICE = JWTAuthenticationService(
+authentication_service = JWTAuthenticationService(
     SECRET_KEY, REFRESH_KEY, constants.ACCESS_TOKEN_EXPIRATION_HOURS, constants.REFRESH_TOKEN_EXPIRATION_DAYS, 'HS256')
 
 # ==============================================
 # Domain repositories
 # ==============================================
-USER_CREDENTIALS_REPOSITORY = UserCredentialsMongoDBRepository(DB_SETTINGS)
+user_credentials_repository = UserCredentialsMongoDBRepository(DB_SETTINGS)
 APP_REPOSITORIES = {
-    'USER_CREDENTIALS_REPOSITORY': USER_CREDENTIALS_REPOSITORY
+    'USER_CREDENTIALS_REPOSITORY': user_credentials_repository
 }
 
 # ==============================================
@@ -75,4 +75,4 @@ del COMMON_LOCALES
 del SIGN_UP_LOCALES
 del TOKEN_LOCALES
 
-LOCALIZER = Localizer(locales_aggregator.application_locales)
+localizer = Localizer(locales_aggregator.application_locales)

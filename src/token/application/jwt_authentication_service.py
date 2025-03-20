@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 import jwt
 
@@ -34,11 +34,14 @@ class JWTAuthenticationService(AuthenticationService):
         """
         Genera y devuelve tanto el access token como el refresh token.
         """
-        token_payload = TokenPayload(user_credentials.username, user_credentials.username, user_credentials.email)
+        token_payload = TokenPayload(
+            user_credentials.username, user_credentials.username, user_credentials.email)
         token_payload.set_expiration(self.access_token_expiration)
-        access_token = jwt.encode(token_payload.to_dict(), self.secret_key, algorithm=self.algorithm)
+        access_token = jwt.encode(token_payload.to_dict(
+        ), self.secret_key, algorithm=self.algorithm)
         token_payload.set_expiration(self.refresh_token_expiration)
-        refresh_token = jwt.encode(token_payload.to_dict(), self.refresh_secret_key, algorithm=self.algorithm)
+        refresh_token = jwt.encode(token_payload.to_dict(
+        ), self.refresh_secret_key, algorithm=self.algorithm)
         return JwtTokenResponse(access_token, refresh_token, self.access_token_expiration)
 
     def authenticate(self, auth_context: dict) -> Tuple[Optional[UserCredentials], Optional[Error]]:
@@ -54,7 +57,8 @@ class JWTAuthenticationService(AuthenticationService):
                 token = auth_context['access_token']
                 secret_key = self.secret_key
 
-            decoded_payload = jwt.decode(token, secret_key, algorithms=[self.algorithm])
+            decoded_payload = jwt.decode(
+                token, secret_key, algorithms=[self.algorithm])
             # Se asume que el payload contiene las claves necesarias para reconstruir UserCredentials
             user = UserCredentials(
                 id=decoded_payload.get('sub'),
