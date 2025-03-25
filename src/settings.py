@@ -9,7 +9,7 @@ from src.sign_up.locales.locales import SIGN_UP_LOCALES
 from src.token.application.jwt_authentication_service import \
     JWTAuthenticationService
 from src.token.locales.locales import TOKEN_LOCALES
-from src.user_credentials.infrastructure.user_credentials_mongodb_repository import \
+from src.common.infrastructure.user_credentials_mongodb_repository import \
     UserCredentialsMongoDBRepository
 
 # Load environment variables from a .env file
@@ -58,9 +58,6 @@ authentication_service = JWTAuthenticationService(
 # Domain repositories
 # ==============================================
 user_credentials_repository = UserCredentialsMongoDBRepository(DB_SETTINGS)
-APP_REPOSITORIES = {
-    'USER_CREDENTIALS_REPOSITORY': user_credentials_repository
-}
 
 # ==============================================
 # Localizations configuration

@@ -1,20 +1,13 @@
 import bcrypt
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 
-from src.common.application.localizations import Localizer
 from src.common.domain.errors import ErrorLocalizable
-from src.common.domain.response import Response, ResponseLocalizable
+from src.common.domain.response import Response, ResponseLocalizable, Status
 from src.constants import DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM, TokenErrorCodes
-from src.settings import (authentication_service, localizer,
-                          user_credentials_repository)
-from src.token.application.jwt_authentication_service import \
-    JWTAuthenticationService
+from src.settings import authentication_service, user_credentials_repository
 from src.token.application.validations import TokenFormValidator
-from src.token.domain.authentication_service import AuthenticationService
-from src.user_credentials.domain.user_credentials import (
+from src.common.domain.user_credentials import (
     UserCredentials, UserCredentialsFormFields)
-from src.user_credentials.domain.user_credentials_repository import \
-    UserCredentialsRepository
 
 token_blueprint = Blueprint('token', __name__, url_prefix='/token')
 
@@ -34,13 +27,13 @@ def handle_new_token_request():
     language = request.args.get(LANGUAGE_GET_PARAM, DEFAULT_LANGUAGE)
     user_credentials = _get_user_credentials()
 
-    response = ResponseLocalizable()
+    response = ResponseLocalizable(language)
     validate_form(user_credentials, response)
     if response.error:
         return response, 400
     validate_user_exists(user_credentials, response)
     if response.error:
-        return response.to_json(), 401
+        return response, 401
 
     response = authentication_service.grant_access(user_credentials)
     return response, 200
@@ -76,10 +69,9 @@ def handle_refresh_token_request():
     payload, error = authentication_service.authenticate(
         {'refresh_token': refresh_token})
     if error:
-        return jsonify({'error': error.message}), 401
+        return ResponseLocalizable(language, Status.ERROR, error), 401
 
-    payload
-    return jsonify(authentication_service.grant_access(payload).to_json()), 200
+    return authentication_service.grant_access(payload), 200
 
 
 def _get_user_credentials() -> UserCredentials:

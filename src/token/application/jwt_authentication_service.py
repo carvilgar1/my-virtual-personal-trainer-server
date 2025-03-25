@@ -6,7 +6,7 @@ from src.common.domain.errors import Error, ErrorLocalizable
 from src.constants import TokenErrorCodes
 from src.token.domain.authentication_service import AuthenticationService
 from src.token.domain.response import JwtTokenResponse, TokenPayload
-from src.user_credentials.domain.user_credentials import UserCredentials
+from src.common.domain.user_credentials import UserCredentials
 
 
 def build_expired_token_error() -> Error:

@@ -2,8 +2,8 @@ from typing import Optional
 
 from pymongo import MongoClient
 
-from src.user_credentials.domain.user_credentials import UserCredentials
-from src.user_credentials.domain.user_credentials_repository import \
+from src.common.domain.user_credentials import UserCredentials
+from src.common.domain.user_credentials_repository import \
     UserCredentialsRepository
 
 

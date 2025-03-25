@@ -4,7 +4,7 @@ from typing import Iterator
 from src.common.application.localizations import (LocalizableProperty,
                                                   LocalizableType)
 from src.constants import CommonErrorCodes
-from src.user_credentials.domain import UserCredentialsFormFields
+from src.common.domain.user_credentials import UserCredentialsFormFields
 
 
 class Error:

@@ -6,7 +6,7 @@ from src.common.domain import Error, errors
 from src.constants import (EMAIL_PATTERN, PASSWORD_ALLOWED_SYMBOLS,
                            PASSWORD_MIN_LENGTH, CommonErrorCodes,
                            SignUpErrorCodes)
-from src.user_credentials.domain.user_credentials import (
+from src.common.domain.user_credentials import (
     UserCredentials, UserCredentialsFormFields)
 
 

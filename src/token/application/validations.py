@@ -4,7 +4,7 @@ import re
 from src.common.application import validations as common_validations
 from src.common.domain import Error, ErrorLocalizable, errors
 from src.constants import TokenErrorCodes
-from src.user_credentials.domain import (UserCredentials,
+from src.common.domain.user_credentials import (UserCredentials,
                                          UserCredentialsFormFields)
 
 

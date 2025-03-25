@@ -3,7 +3,7 @@ from typing import Any, Optional, Tuple
 
 from src.common.domain import Error
 from src.common.domain.response import Response
-from src.user_credentials.domain.user_credentials import UserCredentials
+from src.common.domain.user_credentials import UserCredentials
 
 
 class AuthenticationService(ABC):
