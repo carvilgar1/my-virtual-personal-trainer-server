@@ -3,11 +3,11 @@ from flask import Blueprint, request
 
 from src.common.domain.errors import ErrorLocalizable
 from src.common.domain.response import Response, ResponseLocalizable, Status
+from src.common.domain.user_credentials import (UserCredentials,
+                                                UserCredentialsFormFields)
 from src.constants import DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM, TokenErrorCodes
 from src.settings import authentication_service, user_credentials_repository
 from src.token.application.validations import TokenFormValidator
-from src.common.domain.user_credentials import (
-    UserCredentials, UserCredentialsFormFields)
 
 token_blueprint = Blueprint('token', __name__, url_prefix='/token')
 

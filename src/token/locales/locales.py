@@ -1,5 +1,5 @@
-from src.constants import TokenErrorCodes
 from src.common.domain.user_credentials import UserCredentialsFormFields
+from src.constants import TokenErrorCodes
 
 TOKEN_LOCALES = {
     'en': {

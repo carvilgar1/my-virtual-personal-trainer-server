@@ -4,13 +4,13 @@ from dotenv import load_dotenv
 
 from src import constants
 from src.common.application.localizations import LocalesAggregator, Localizer
+from src.common.infrastructure.user_credentials_mongodb_repository import \
+    UserCredentialsMongoDBRepository
 from src.common.locales.locales import COMMON_LOCALES
 from src.sign_up.locales.locales import SIGN_UP_LOCALES
 from src.token.application.jwt_authentication_service import \
     JWTAuthenticationService
 from src.token.locales.locales import TOKEN_LOCALES
-from src.common.infrastructure.user_credentials_mongodb_repository import \
-    UserCredentialsMongoDBRepository
 
 # Load environment variables from a .env file
 load_dotenv(dotenv_path='.env.dev')

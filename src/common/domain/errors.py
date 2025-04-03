@@ -3,12 +3,9 @@ from typing import Iterator
 
 from src.common.application.localizations import (LocalizableProperty,
                                                   LocalizableType)
-from src.constants import CommonErrorCodes
-from src.common.domain.user_credentials import UserCredentialsFormFields
 
 
 class Error:
-
     def __init__(self, code: str, message: str, validation_field: str = None, errors: list['Error'] = None):
         if not code:
             raise ValueError("Error code must be set")
@@ -50,7 +47,6 @@ class ErrorMessageLocalization(LocalizableProperty):
 
 
 class ErrorLocalizable(Error, LocalizableType):
-
     def __init__(self, code: str, message_locale_id: str, default_message: str = None, validation_field: str = None, errors: list['Error'] = None):
         super().__init__(code, default_message, validation_field, errors)
         self.error_message_localization = ErrorMessageLocalization(
@@ -66,11 +62,3 @@ class ErrorLocalizable(Error, LocalizableType):
             if isinstance(nested_error, LocalizableType):
                 for localizable_property in nested_error.get_localizable_properties():
                     yield localizable_property
-
-
-def build_invalid_email_format_error() -> Error:
-    return ErrorLocalizable(CommonErrorCodes.INVALID_EMAIL, CommonErrorCodes.INVALID_EMAIL, 'Invalid email format', UserCredentialsFormFields.EMAIL)
-
-
-def build_missing_mandatory_field_error(validation_field: str) -> Error:
-    return ErrorLocalizable(CommonErrorCodes.MISSING_MANDATORY_FIELD, CommonErrorCodes.MISSING_MANDATORY_FIELD, 'Mandatory field is missing', validation_field)
