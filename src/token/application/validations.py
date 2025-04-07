@@ -1,14 +1,12 @@
 
 import re
 
-from src.common.application import validations as common_validations
 from src.common.application import error_builders
+from src.common.application import validations as common_validations
 from src.common.domain import Error, ErrorLocalizable, errors
 from src.common.domain.user_credentials import (UserCredentials,
                                                 UserCredentialsFormFields)
 from src.constants import TokenErrorCodes
-
-
 
 
 class TokenFormValidator:
@@ -30,8 +28,11 @@ class TokenFormValidator:
 
     def __validate_user_id(self):
         if not self.__found_user_identifier:
-            self.__errors.append(error_builders.init_missing_username_identifier_error())
-            self.__errors.append(error_builders.init_missing_email_identifier_error())
+            self.__errors.append(
+                error_builders.init_missing_username_identifier_error())
+            self.__errors.append(
+                error_builders.init_missing_email_identifier_error())
+
     def __contains_user_identifier(self) -> bool:
         return self.__found_user_identifier
 
@@ -47,7 +48,8 @@ class TokenFormValidator:
         if common_validations.string_is_none_or_blank(email):
             pass
         elif not common_validations.validate_email_format(email):
-            self.__errors.append(error_builders.init_missing_username_identifier_error())
+            self.__errors.append(
+                error_builders.init_missing_username_identifier_error())
         else:
             self.__found_user_identifier = True
 

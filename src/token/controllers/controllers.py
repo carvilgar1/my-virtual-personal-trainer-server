@@ -1,60 +1,29 @@
+import re
 import bcrypt
-from flask import Blueprint, request
+from flask import Blueprint, jsonify, request
 
 from src.common.domain.errors import ErrorLocalizable
-from src.common.domain.response import Response, ResponseLocalizable, Status
+from src.common.domain.response import Response, ResponseLocalizable, Status, Error
 from src.common.domain.user_credentials import (UserCredentials,
                                                 UserCredentialsFormFields)
-from src.constants import DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM, TokenErrorCodes
-from src.settings import authentication_service, user_credentials_repository
-from src.token.application.validations import TokenFormValidator
+from src.constants import DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM, TokenErrorCodes, EMAIL_PATTERN, CommonErrorCodes
+from src.settings import authentication_service
 
 token_blueprint = Blueprint('token', __name__, url_prefix='/token')
-
-
-def build_user_not_found_error():
-    return ErrorLocalizable(
-        TokenErrorCodes.USER_NOT_FOUND, TokenErrorCodes.USER_NOT_FOUND, 'User not found')
-
-
-def build_wrong_password_error():
-    return ErrorLocalizable(
-        TokenErrorCodes.WRONG_PASSWORD, TokenErrorCodes.WRONG_PASSWORD, 'Wrong password')
 
 
 @token_blueprint.route('/new', methods=['POST'])
 def handle_new_token_request():
     language = request.args.get(LANGUAGE_GET_PARAM, DEFAULT_LANGUAGE)
     user_credentials = _get_user_credentials()
-
-    response = ResponseLocalizable(language)
-    validate_form(user_credentials, response)
-    if response.error:
-        return response, 400
-    validate_user_exists(user_credentials, response)
-    if response.error:
-        return response, 401
-
+    form_validator = TokenFormValidator(user_credentials)
+    form_validator.validate()
+    if form_validator.errors:
+        response = ResponseLocalizable(Status.ERROR, form_validator.errors)
+        return jsonify(response.to_json()), 400
+    
     response = authentication_service.grant_access(user_credentials)
     return response, 200
-
-
-def validate_form(user_credentials: UserCredentials, response: ResponseLocalizable):
-    validator = TokenFormValidator(user_credentials)
-    validator.validate()
-    if validator.has_errors:
-        response.set_error_status(validator.get_errors())
-
-
-def validate_user_exists(user_credentials: UserCredentials, response: ResponseLocalizable):
-    current_user = user_credentials_repository.find_by_username_or_email(
-        user_credentials.username, user_credentials.email)
-    if not current_user:
-        error = build_user_not_found_error()
-        response.set_error_status(error)
-    elif not check_password_match(user_credentials, current_user):
-        error = build_wrong_password_error()
-        response.set_error_status(error)
 
 
 def check_password_match(user_credentials: UserCredentials, current_user: UserCredentials):
@@ -80,3 +49,49 @@ def _get_user_credentials() -> UserCredentials:
     username = form.get(UserCredentialsFormFields.USERNAME)
     password = form.get(UserCredentialsFormFields.PASSWORD)
     return UserCredentials(None, email, username, password)
+
+class BaseFormValidator:
+    def __init__(self):
+        self.__errors: Error
+    
+    def has_errors(self) -> bool:
+        return bool(self.__errors)
+    
+    def get_errors(self) -> Error:
+        return self.__errors
+    
+    def _add_error(self, error: Error):
+        if not self.__errors:
+            self.__errors = ErrorLocalizable(CommonErrorCodes.FORM_CONTAINS_ERRORS, CommonErrorCodes.FORM_CONTAINS_ERRORS, 'Form contains errors')
+        self.__errors.add_error(error)
+    
+
+class TokenFormValidator(BaseFormValidator):
+    def __init__(self, user_credentials: UserCredentials):
+        super.__init__()
+        
+        self.username = user_credentials.username
+        self.email = user_credentials.email
+        self.password = user_credentials.password
+
+    def validate(self):
+        self.validate_user_id()
+        self.validate_password_field()
+
+    def validate_password_field(self):
+        if not self.password:
+            error = self.build_empty_field_error()
+            super._add_error(error)
+
+            
+    def validate_user_id(self):
+        if self.username or self.email:
+            if self.email:
+                if not re.match(self.email, EMAIL_PATTERN):
+                    error = ErrorLocalizable(CommonErrorCodes.INVALID_EMAIL, CommonErrorCodes.INVALID_EMAIL, 'Email is invalid')
+                    self.errors.add_error(error)
+        else:
+            error = ErrorLocalizable(TokenErrorCodes.MISSING_USER_IDENTIFIER, TokenErrorCodes.MISSING_USER_IDENTIFIER, 'Yo must introduce any user identification')
+            self.errors = error
+    
+            

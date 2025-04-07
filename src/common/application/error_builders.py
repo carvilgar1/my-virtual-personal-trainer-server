@@ -92,6 +92,7 @@ def init_form_contains_errors_error(errors: list[Error]) -> Error:
     default_message = 'Form contains errors'
     return ErrorLocalizable(code, locale_id, default_message, errors=errors)
 
+
 def init_missing_user_identifier_error(validation_field: str) -> Error:
     code = TokenErrorCodes.MISSING_USER_IDENTIFIER
     locale_id = TokenErrorCodes.MISSING_USER_IDENTIFIER
