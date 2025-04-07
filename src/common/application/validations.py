@@ -2,36 +2,22 @@ import re
 from datetime import datetime
 from typing import Any
 
-from src.common.domain.response import Error
+from src.common.domain import ErrorLocalizable, Error
 from src.constants import (DATE_FORMAT, DATE_TIME_FORMAT, EMAIL_PATTERN,
                            CommonErrorCodes)
 
-EMAIL_REGEX = re.compile(EMAIL_PATTERN)
-
-
-def string_is_none_or_blank(value: str) -> bool:
-    return not (value or value.strip())
+__email_regex = re.compile(EMAIL_PATTERN)
 
 
 def validate_email_format(email: str) -> bool:
-    return EMAIL_REGEX.match(email)
-
-
-def validate_mandatory_field(field_name: str, field_value: str) -> tuple[bool, Error]:
-    if string_is_none_or_blank(field_value):
-        error = Error(CommonErrorCodes.MISSING_MANDATORY_FIELD,
-                      CommonErrorCodes.MISSING_MANDATORY_FIELD, field_name)
-        return False, error
-    return True, None
-
+    return __email_regex.match(email)
 
 def validate_integer(field: str | Any) -> tuple[int, Error]:
     try:
         number = int(field)
         return number, None
     except ValueError:
-        error = Error(CommonErrorCodes.INVALID_INTEGER,
-                      CommonErrorCodes.INVALID_INTEGER)
+        error = ErrorLocalizable(CommonErrorCodes.INVALID_INTEGER, CommonErrorCodes.INVALID_INTEGER, 'Invalid integer')
         return None, error
 
 
@@ -40,8 +26,7 @@ def validate_float(field: str | Any) -> tuple[float, Error]:
         decimal = float(field)
         return decimal, None
     except ValueError:
-        error = Error(CommonErrorCodes.INVALID_FLOAT,
-                      CommonErrorCodes.INVALID_FLOAT)
+        error = ErrorLocalizable(CommonErrorCodes.INVALID_FLOAT, CommonErrorCodes.INVALID_FLOAT, 'Invalid float')
         return None, error
 
 
@@ -50,8 +35,7 @@ def validate_date(field: str | Any) -> tuple[datetime, Error]:
         date = datetime.strptime(field, DATE_FORMAT)
         return date, None
     except ValueError:
-        error = Error(CommonErrorCodes.INVALID_DATE,
-                      CommonErrorCodes.INVALID_DATE)
+        error = ErrorLocalizable(CommonErrorCodes.INVALID_DATE, CommonErrorCodes.INVALID_DATE, 'The field must be a valid date, format yyyy-MM-dd is expected')	
         return None, error
 
 
@@ -60,35 +44,21 @@ def validate_datetime(field: str | Any) -> tuple[datetime, Error]:
         date = datetime.strptime(field, DATE_TIME_FORMAT)
         return date, None
     except ValueError:
-        error = Error(CommonErrorCodes.INVALID_DATETIME,
-                      CommonErrorCodes.INVALID_DATETIME)
+        error = ErrorLocalizable(CommonErrorCodes.INVALID_DATETIME, CommonErrorCodes.INVALID_DATETIME, 'The field must be a valid datetime, format ISO8601 yyyy-MM-ddTHH:mm:ss.ffffff±hh:mm is expected')
         return None, error
 
 
-class FieldValidator:
-    def __init__(self, field_value: str | Any, errors: list[Error] = None):
-        self.__field_value = field_value
-        self.__errors = [] if errors is None else errors
-        self.__contains_error = False
-
-    @property
-    def field_value(self) -> str:
-        return self.__field_value
-
-    @property
-    def errors(self) -> list[Error]:
+class BaseFormValidator:
+    def __init__(self):
+        self.__errors: Error
+    
+    def has_errors(self) -> bool:
+        return bool(self.__errors)
+    
+    def get_errors(self) -> Error:
         return self.__errors
-
-    @property
-    def contains_error(self) -> bool:
-        return self.__contains_error
-
-    def __activate_error_flag(self):
-        self.__contains_error = True
-
-    def add_error(self, error: Error):
-        self.__errors.append(error)
-        self.__activate_error_flag()
-
-    def validate(self) -> None:
-        raise NotImplementedError
+    
+    def _add_error(self, error: Error):
+        if not self.__errors:
+            self.__errors = ErrorLocalizable(CommonErrorCodes.FORM_CONTAINS_ERRORS, CommonErrorCodes.FORM_CONTAINS_ERRORS, 'Form contains errors')
+        self.__errors.add_error(error)

@@ -2,59 +2,41 @@
 import re
 
 from src.common.application import error_builders
-from src.common.application import validations as common_validations
+from src.common.application.validations import BaseFormValidator, validate_email_format
 from src.common.domain import Error, ErrorLocalizable, errors
 from src.common.domain.user_credentials import (UserCredentials,
                                                 UserCredentialsFormFields)
-from src.constants import TokenErrorCodes
+from src.constants import CommonErrorCodes, TokenErrorCodes
 
+def __build_empty_user_id_error() -> Error:
+    return ErrorLocalizable(CommonErrorCodes.MISSING_MANDATORY_FIELD, CommonErrorCodes.MISSING_MANDATORY_FIELD, 'The field is required')
 
-class TokenFormValidator:
+class TokenFormValidator(BaseFormValidator):
     def __init__(self, user_credentials: UserCredentials):
-        self.__errors = []
-        self.error = Error()
+        super.__init__()
+        
+        self.username = user_credentials.username
+        self.email = user_credentials.email
+        self.password = user_credentials.password
 
-        self.user_credentials = user_credentials
+    def validate(self):
+        self.validate_user_id()
+        self.validate_password_field()
 
-    def has_errors(self) -> bool:
-        return bool(self.__errors)
+    def validate_password_field(self):
+        if not self.password:
+            error = self.build_empty_field_error()
+            super._add_error(error)
 
-    def get_errors(self) -> Error:
-        return error_builders.init_form_contains_errors_error(self.__errors) if self.has_errors else None
-
-    def validate(self) -> None:
-        self.__validate_password()
-        self.__validate_user_id()
-
-    def __validate_user_id(self):
-        if not self.__found_user_identifier:
-            self.__errors.append(
-                error_builders.init_missing_username_identifier_error())
-            self.__errors.append(
-                error_builders.init_missing_email_identifier_error())
-
-    def __contains_user_identifier(self) -> bool:
-        return self.__found_user_identifier
-
-    def __validate_username(self) -> None:
-        username = self.user_credentials.username
-        if common_validations.string_is_none_or_blank(username):
-            pass
+            
+    def validate_user_id(self):
+        if self.username or self.email:
+            if self.email:
+                if not validate_email_format(self.email):
+                    error = ErrorLocalizable(CommonErrorCodes.INVALID_EMAIL, CommonErrorCodes.INVALID_EMAIL, 'Email is invalid')
+                    self.errors.add_error(error)
         else:
-            self.__found_user_identifier = True
-
-    def __validate_email(self) -> None:
-        email = self.user_credentials.email
-        if common_validations.string_is_none_or_blank(email):
-            pass
-        elif not common_validations.validate_email_format(email):
-            self.__errors.append(
-                error_builders.init_missing_username_identifier_error())
-        else:
-            self.__found_user_identifier = True
-
-    def __validate_password(self) -> None:
-        password = self.user_credentials.password
-        if common_validations.string_is_none_or_blank(password):
-            self.__errors.append(error_builders.build_missing_mandatory_field_error(
-                UserCredentialsFormFields.PASSWORD))
+            error = ErrorLocalizable(TokenErrorCodes.MISSING_USER_IDENTIFIER, TokenErrorCodes.MISSING_USER_IDENTIFIER, 'Yo must introduce any user identification')
+            self.errors = error
+    
+            
