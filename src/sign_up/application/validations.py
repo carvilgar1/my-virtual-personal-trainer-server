@@ -1,8 +1,7 @@
 import re
 
 from src.common.application import error_builders
-from src.common.application.validations import (FieldValidator,
-                                                validate_mandatory_field)
+from src.common.application.validations import build_empyt_field_error
 from src.common.domain import (Error, UserCredentials,
                                UserCredentialsFormFields,
                                UserCredentialsRepository)
@@ -10,73 +9,53 @@ from src.constants import (EMAIL_PATTERN, PASSWORD_ALLOWED_SYMBOLS,
                            PASSWORD_MIN_LENGTH)
 
 
-class PasswordValidator(FieldValidator):
-    def __init__(self, password: str, errors: list[Error] = None):
-        super().__init__(password, errors)
+def validate_password(password: str, errors: list[Error]) -> None:
+    is_filled = password and password.strip()
+    if not is_filled:
+        errors.append(build_empyt_field_error())
+        return
 
-    def validate(self) -> None:
-        is_filled, error = validate_mandatory_field(
-            UserCredentialsFormFields.PASSWORD, self.field_value)
-        if not is_filled:
-            self.add_error(error)
-        else:
-            self.__validate_password_length()
-            self.__validate_password_has_lowercase()
-            self.__validate_password_has_uppercase()
-            self.__validate_password_has_digit()
-            self.__validate_password_has_special_character()
+    if len(password) < PASSWORD_MIN_LENGTH:
+        errors.append(error_builders.init_password_too_short_error())
 
-    def __validate_password_length(self):
-        if len(self.field_value) < PASSWORD_MIN_LENGTH:
-            error = error_builders.init_password_too_short_error()
-            self.add_error(error)
+    if not any(char.islower() for char in password):
+        errors.append(error_builders.init_password_missing_lowercase_error())
 
-    def __validate_password_has_lowercase(self):
-        if not any(char.islower() for char in self.field_value):
-            error = error_builders.init_password_missing_lowercase_error()
-            self.add_error(error)
+    if not any(char.isupper() for char in password):
+        errors.append(error_builders.init_password_missing_uppercase_error())
 
-    def __validate_password_has_uppercase(self):
-        if not any(char.isupper() for char in self.field_value):
-            error = error_builders.init_password_missing_uppercase_error()
-            self.add_error(error)
+    if not any(char.isdigit() for char in password):
+        errors.append(error_builders.init_password_missing_digit_error())
 
-    def __validate_password_has_digit(self):
-        if not any(char.isdigit() for char in self.field_value):
-            error = error_builders.init_password_missing_digit_error()
-            self.add_error(error)
-
-    def __validate_password_has_special_character(self):
-        if not any(char in PASSWORD_ALLOWED_SYMBOLS for char in self.field_value):
-            error = error_builders.init_password_missing_special_character_error()
-            self.add_error(error)
+    if not any(char in PASSWORD_ALLOWED_SYMBOLS for char in password):
+        errors.append(
+            error_builders.init_password_missing_special_character_error())
 
 
-class EmailValidator(FieldValidator):
-    __EMAIL_REGEX = re.compile(EMAIL_PATTERN)
+def validate_email(email: str, errors: list[Error]) -> None:
+    is_filled = email and email.strip()
+    if not is_filled:
+        errors.append(build_empyt_field_error())
+        return
 
-    def __init__(self, email: str, errors: list[Error] = None):
-        super().__init__(email, errors)
+    email_regex = re.compile(EMAIL_PATTERN)
+    if not email_regex.match(email):
+        errors.append(error_builders.init_email_format_error())
 
-    def validate(self) -> None:
-        is_filled, error = validate_mandatory_field(
-            UserCredentialsFormFields.EMAIL, self.field_value)
-        if not is_filled:
-            self.add_error(error)
-        else:
-            self.__validate_email_format()
 
-    def __validate_email_format(self):
-        if not self.__EMAIL_REGEX.match(self.field_value):
-            error = error_builders.init_email_format_error()
-            self.add_error(error)
+def validate_username(username: str, errors: list[Error]) -> None:
+    is_filled = username and username.strip()
+    if not is_filled:
+        errors.append(build_empyt_field_error())
 
 
 class SignUpFormValidator:
     def __init__(self, user_credentials: UserCredentials):
-        self.__errors = []
+        self.email = user_credentials.email
+        self.username = user_credentials.username
+        self.password = user_credentials.password
 
-        self.user_credentials = user_credentials
+        self.__errors = []
 
     def has_errors(self) -> bool:
         return bool(self.__errors)
@@ -87,25 +66,9 @@ class SignUpFormValidator:
         return None
 
     def validate(self) -> None:
-        self.__validate_username()
-        self.__validate_email()
-        self.__validate_password()
-
-    def __validate_username(self):
-        is_filled, error = validate_mandatory_field(
-            UserCredentialsFormFields.USERNAME, self.user_credentials.username)
-        if not is_filled:
-            self.__errors.append(error)
-
-    def __validate_email(self):
-        email_validator = EmailValidator(
-            self.user_credentials.email, self.__errors)
-        email_validator.validate()
-
-    def __validate_password(self):
-        password_validator = PasswordValidator(
-            self.user_credentials.password, self.__errors)
-        password_validator.validate()
+        validate_email(self.email, self.__errors)
+        validate_username(self.username, self.__errors)
+        validate_password(self.password, self.__errors)
 
 
 class UniqueUserValidator:

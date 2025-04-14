@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from src.common.domain import Response
-from src.common.domain.response import Status
 
 
 class TokenPayload:

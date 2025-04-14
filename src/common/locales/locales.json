@@ -1,0 +1,38 @@
+{
+    "UNKNOWN_ERROR": {
+        "en": "An unknown error occurred, please contact customer support",
+        "es": "Ocurrió un error desconocido, por favor contacte al soporte técnico"
+    },
+    "MISSING_MANDATORY_FIELD": {
+        "en": "The field is required",
+        "es": "El campo es requerido"
+    },
+    "INVALID_INTEGER": {
+        "en": "The field must be an integer",
+        "es": "El campo debe ser un entero"
+    },
+    "INVALID_FLOAT": {
+        "en": "The field must be a float",
+        "es": "El campo debe ser un decimal"
+    },
+    "INVALID_DATE": {
+        "en": "The field must be a valid date, format yyyy-MM-dd is expected",
+        "es": "El campo debe ser una fecha válida, el formato esperado es yyyy-MM-dd"
+    },
+    "INVALID_DATETIME": {
+        "en": "The field must be a valid datetime, format ISO8601 yyyy-MM-ddTHH:mm:ss.ffffff±hh:mm is expected",
+        "es": "El campo debe ser una fecha y hora válida, el formato ISO8601 yyyy-MM-ddTHH:mm:ss.fffffff+hh:mm es esperado"
+    },
+    "INVALID_EMAIL": {
+        "en": "The field must be a valid email address",
+        "es": "El campo debe ser una dirección de correo electrónico válida"
+    },
+    "FORM_CONTAINS_ERRORS": {
+        "en": "The form contains errors",
+        "es": "El formulario contiene errores"
+    },
+    "DATE_MUST_BE_IN_PAST": {
+        "en": "The date must be in the past",
+        "es": "La fecha debe ser en el pasado"
+    }
+}

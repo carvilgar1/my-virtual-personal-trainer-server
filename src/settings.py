@@ -8,8 +8,7 @@ from src.common.infrastructure.user_credentials_mongodb_repository import \
     UserCredentialsMongoDBRepository
 from src.common.locales.locales import COMMON_LOCALES
 from src.sign_up.locales.locales import SIGN_UP_LOCALES
-from src.token.application.jwt_authentication_service import \
-    JWTAuthenticationService
+from src.token.application.authentication import JWTAuthenticationService
 from src.token.locales.locales import TOKEN_LOCALES
 
 # Load environment variables from a .env file
@@ -62,14 +61,4 @@ user_credentials_repository = UserCredentialsMongoDBRepository(DB_SETTINGS)
 # ==============================================
 # Localizations configuration
 # ==============================================
-locales_aggregator = LocalesAggregator()
-locales_aggregator.add_locales(COMMON_LOCALES)\
-    .add_locales(SIGN_UP_LOCALES)\
-    .add_locales(TOKEN_LOCALES)
-
-# Remove the locales from the global scope
-del COMMON_LOCALES
-del SIGN_UP_LOCALES
-del TOKEN_LOCALES
-
 localizer = Localizer(locales_aggregator.application_locales)

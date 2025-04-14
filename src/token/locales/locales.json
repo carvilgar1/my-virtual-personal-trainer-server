@@ -1,0 +1,22 @@
+{
+    "MISSING_USER_IDENTIFIER": {
+        "en": "Either '{username}' or '{email}' should be provided",
+        "es": "Se debe proporcionar '{username}' o '{email}'"
+    },
+    "USER_NOT_FOUND": {
+        "en": "User not found",
+        "es": "Usuario no encontrado"
+    },
+    "WRONG_PASSWORD": {
+        "en": "Wrong password",
+        "es": "Contraseña incorrecta"
+    },
+    "INVALID_TOKEN": {
+        "en": "Invalid token",
+        "es": "Token inválido"
+    },
+    "EXPIRED_TOKEN": {
+        "en": "Expired token",
+        "es": "Token expirado"
+    }
+}

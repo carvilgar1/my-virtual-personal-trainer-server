@@ -1,24 +1,32 @@
-from typing import Optional, Tuple
+from abc import ABC, abstractmethod
+from typing import Any, Optional, Tuple
 
+import bcrypt
 import jwt
 
 from src.common.domain.errors import Error, ErrorLocalizable
+from src.common.domain.response import ResponseLocalizable, Status
 from src.common.domain.user_credentials import UserCredentials
+from src.common.domain.user_credentials_repository import \
+    UserCredentialsRepository
 from src.constants import TokenErrorCodes
-from src.token.domain.authentication_service import AuthenticationService
+from src.token.application.validations import (TokenFormValidator,
+                                               build_user_not_found_error,
+                                               build_wrong_password_error)
 from src.token.domain.response import JwtTokenResponse, TokenPayload
 
 
-def build_expired_token_error() -> Error:
-    return ErrorLocalizable(TokenErrorCodes.EXPIRED_TOKEN, TokenErrorCodes.EXPIRED_TOKEN, 'Expired token')
+class AuthenticationService(ABC):
+    def __init__(self):
+        pass
 
+    @abstractmethod
+    def grant_access(self, credentials: UserCredentials) -> Optional[Any]:
+        pass
 
-def build_invalid_token_error() -> Error:
-    return ErrorLocalizable(TokenErrorCodes.INVALID_TOKEN, TokenErrorCodes.INVALID_TOKEN, 'Invalid token')
-
-
-def build_unexpected_error(message: str) -> Error:
-    return Error(TokenErrorCodes.UNEXPECTED_ERROR, message)
+    @abstractmethod
+    def authenticate(self, auth_context: dict | Any) -> Tuple[UserCredentials, Error]:
+        pass
 
 
 class JWTAuthenticationService(AuthenticationService):
@@ -73,3 +81,36 @@ class JWTAuthenticationService(AuthenticationService):
             email=decoded_payload['email'],
             password=None
         )
+
+
+def generate_new_token(
+    user_credentials_repository: UserCredentialsRepository,
+    authentication_service: AuthenticationService,
+    user_credentials: UserCredentials
+) -> Tuple[ResponseLocalizable, int]:
+    form_validator = TokenFormValidator(user_credentials)
+    form_validator.validate()
+    if form_validator.has_errors():
+        return ResponseLocalizable(Status.ERROR, form_validator.errors), 400
+
+    current_user = user_credentials_repository.find_by_username_or_email(
+        user_credentials.username, user_credentials.email)
+    if not current_user:
+        return ResponseLocalizable(Status.ERROR, build_user_not_found_error()), 404
+    if not bcrypt.checkpw(user_credentials.password.encode('utf-8'), current_user.password):
+        return ResponseLocalizable(Status.ERROR, build_wrong_password_error()), 401
+
+    jwt_token = authentication_service.grant_access(user_credentials)
+    return jwt_token, 200
+
+
+def build_expired_token_error() -> Error:
+    return ErrorLocalizable(TokenErrorCodes.EXPIRED_TOKEN, TokenErrorCodes.EXPIRED_TOKEN, 'Expired token')
+
+
+def build_invalid_token_error() -> Error:
+    return ErrorLocalizable(TokenErrorCodes.INVALID_TOKEN, TokenErrorCodes.INVALID_TOKEN, 'Invalid token')
+
+
+def build_unexpected_error(message: str) -> Error:
+    return Error(TokenErrorCodes.UNEXPECTED_ERROR, message)

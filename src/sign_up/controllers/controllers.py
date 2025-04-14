@@ -1,8 +1,9 @@
 from bcrypt import gensalt, hashpw
 from flask import Blueprint, jsonify, request
 
-from src.common.domain import (Error, Response, ResponseLocalizable, Status,
-                               UserCredentials, UserCredentialsFormFields)
+from src.common.domain import (Error, Response, Status, UserCredentials,
+                               UserCredentialsFormFields)
+from src.common.locales.locales import CommonErrorCodes
 from src.constants import DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM
 from src.settings import localizer, user_credentials_repository
 from src.sign_up.application.validations import (SignUpFormValidator,
@@ -30,8 +31,10 @@ def handle_sign_up_request():
 
         return jsonify(response.to_json()), status
     except Exception as e:
-        error = error_builders.init_server_exception_error(e)
-        return ResponseLocalizable(Status.ERROR, error), 500
+        error = Error(CommonErrorCodes.INTERNAL_SERVER_ERROR,
+                      CommonErrorCodes.INTERNAL_SERVER_ERROR,
+                      str(e))
+        return Response(Status.ERROR, error), 500
 
 
 def sign_up(user_credentials: UserCredentials) -> tuple[Response, int]:
@@ -39,14 +42,14 @@ def sign_up(user_credentials: UserCredentials) -> tuple[Response, int]:
     form_validator.validate()
     if form_validator.has_errors():
         error = form_validator.get_errors()
-        return ResponseLocalizable(Status.ERROR, error), 400
+        return Response(Status.ERROR, error), 400
 
     unique_user_validator = UniqueUserValidator(
         user_credentials_repository, user_credentials)
     unique_user_validator.validate()
     if unique_user_validator.has_errors():
         error = unique_user_validator.get_errors()
-        return ResponseLocalizable(Status.ERROR, error), 400
+        return Response(Status.ERROR, error), 400
 
     user_credentials.password = hashpw(
         user_credentials.password.encode('utf-8'), gensalt())
