@@ -46,7 +46,7 @@ class TestValidations(unittest.TestCase):
         self.assertIsNone(error)
 
     def test_validate_content_length_failure(self):
-        field_value = "x" * DEFAULT_MAX_VARCHAR_LENGTH
+        field_value = "x" * (DEFAULT_MAX_VARCHAR_LENGTH + 1)
         language = "en"
         result, error = validate_content_length(field_value, language)
         self.assertFalse(result)

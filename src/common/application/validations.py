@@ -23,7 +23,7 @@ def validate_mandatory_field(field_value: str | Any, field_key: str, language: s
 
 
 def validate_content_length(field_value: str, lang: str, max_content_length_allowed=DEFAULT_MAX_VARCHAR_LENGTH) -> tuple[bool, Error]:
-    if len(field_value) < max_content_length_allowed:
+    if len(field_value) <= max_content_length_allowed:
         return True, None
     message = _(CommonErrorCodes.FIELD_TOO_LARGE, lang)
     if message:
