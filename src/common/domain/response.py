@@ -1,5 +1,16 @@
 from enum import Enum
 
+from src.constants import CommonErrorCodes
+
+
+class Status(Enum):
+    SUCCESS = 'Success'
+    ERROR = 'Error'
+
+
+def init_internal_server_error(exception):
+    return Error(CommonErrorCodes.INTERNAL_SERVER_ERROR, str(exception))
+
 
 class Error:
     def __init__(self, code: str, message: str, validation_field: str = None, errors: list['Error'] = None):
@@ -17,9 +28,11 @@ class Error:
 
     def to_json(self):
         error = {
-            'code': self.code,
-            'message': self.message
+            'code': self.code
         }
+
+        if self.message:
+            error['message'] = self.message
 
         if self.validation_field:
             error['validationField'] = self.validation_field
@@ -30,17 +43,12 @@ class Error:
         return error
 
 
-class Status(Enum):
-    SUCCESS = 'Success'
-    ERROR = 'Error'
-
-
 class Response:
-    def __init__(self, status: Status, error: Error = None):
+    def __init__(self, status: Status, error: 'Error' = None):
         self.status = status
         self.error = error
 
-    def set_error_status(self, error: Error):
+    def set_error_status(self, error: 'Error'):
         self.error = error
         self.status = Status.ERROR
 

@@ -2,14 +2,18 @@ import os
 
 from dotenv import load_dotenv
 
-from src.common.application.localizations import LocalesAggregator, Localizer
-from src.common.locales.locales import COMMON_LOCALES
-from src.sign_up.locales.locales import SIGN_UP_LOCALES
-from src.user_credentials.infrastructure.user_credentials_mongodb_repository import \
+from src import constants
+from src.common.application.localizations import (PlaceHolderReplacer,
+                                                  load_locales)
+from src.common.domain import UserCredentialsFormFields
+from src.common.infrastructure.user_credentials_mongodb_repository import \
     UserCredentialsMongoDBRepository
+from src.token_auth.application.authentication import JWTAuthenticationService
 
-# Load environment variables from a .env file
-load_dotenv(dotenv_path='.env.dev')
+# ==============================================
+# Enviroment variables
+# ==============================================
+load_dotenv()
 
 # ==============================================
 # Secret keys
@@ -45,22 +49,33 @@ DB_SETTINGS = {
 }
 
 # ==============================================
+# Authentication service
+# ==============================================
+authentication_service = JWTAuthenticationService(
+    SECRET_KEY, REFRESH_KEY, constants.ACCESS_TOKEN_EXPIRATION_HOURS, constants.REFRESH_TOKEN_EXPIRATION_DAYS, 'HS256')
+
+# ==============================================
 # Domain repositories
 # ==============================================
-USER_CREDENTIALS_REPOSITORY = UserCredentialsMongoDBRepository(DB_SETTINGS)
-APP_REPOSITORIES = {
-    'USER_CREDENTIALS_REPOSITORY': USER_CREDENTIALS_REPOSITORY
-}
+user_credentials_repository = UserCredentialsMongoDBRepository(DB_SETTINGS)
 
 # ==============================================
 # Localizations configuration
 # ==============================================
-locales_aggregator = LocalesAggregator()
-locales_aggregator.add_locales(COMMON_LOCALES)\
-    .add_locales(SIGN_UP_LOCALES)
 
-# Remove the locales from the global scope
-del COMMON_LOCALES
-del SIGN_UP_LOCALES
 
-LOCALIZER = Localizer(locales_aggregator.application_locales)
+def init_placeholder_replacements():
+    return {
+        'username': UserCredentialsFormFields.USERNAME,
+        'email': UserCredentialsFormFields.EMAIL,
+        'password': UserCredentialsFormFields.PASSWORD,
+        'password_min_length': str(constants.PASSWORD_MIN_LENGTH),
+        'username_max_chars': str(constants.MAX_USERNAME_CHARS),
+        'password_allowed_symbols': ''.join(constants.PASSWORD_ALLOWED_SYMBOLS)
+    }
+
+
+root_dir = os.path.dirname(os.path.abspath(__file__))
+default_replacer = PlaceHolderReplacer(
+    r'\{\{(.+?)\}\}', init_placeholder_replacements())
+load_locales(root_dir, default_replacer)

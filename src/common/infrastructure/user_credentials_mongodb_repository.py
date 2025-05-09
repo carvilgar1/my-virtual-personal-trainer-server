@@ -2,9 +2,7 @@ from typing import Optional
 
 from pymongo import MongoClient
 
-from src.user_credentials.domain.user_credentials import UserCredentials
-from src.user_credentials.domain.user_credentials_repository import \
-    UserCredentialsRepository
+from src.common.domain import UserCredentials, UserCredentialsRepository
 
 
 class UserCredentialsMongoDBRepository(UserCredentialsRepository):
@@ -25,14 +23,44 @@ class UserCredentialsMongoDBRepository(UserCredentialsRepository):
     def find_by_username(self, username: str) -> Optional[UserCredentials]:
         user_credentials = self.collection.find_one(
             {'credentials.username': username})
-        return user_credentials
+
+        if validate_user_credentials(user_credentials):
+            return build_user_credentials(user_credentials)
+        return None
 
     def find_by_email(self, email: str) -> Optional[UserCredentials]:
         user_credentials = self.collection.find_one(
             {'credentials.email': email})
-        return user_credentials
+
+        if validate_user_credentials(user_credentials):
+            return build_user_credentials(user_credentials)
+        return None
 
     def find_by_username_or_email(self, username: str, email: str) -> Optional[UserCredentials]:
         user_credentials = self.collection.find_one(
             {'$or': [{'credentials.username': username}, {'credentials.email': email}]})
-        return user_credentials
+
+        if validate_user_credentials(user_credentials):
+            return build_user_credentials(user_credentials)
+        return None
+
+
+def validate_user_credentials(user_credentials: dict) -> bool:
+    if not user_credentials:
+        return False
+
+    credentials = user_credentials.get('credentials')
+    if not credentials:
+        return False
+
+    mandatory_attrs = ('username', 'email', 'password')
+    return all(attr in credentials for attr in mandatory_attrs)
+
+
+def build_user_credentials(user_credentials: dict) -> UserCredentials:
+    return UserCredentials(
+        str(user_credentials['_id']),
+        user_credentials['credentials']['email'],
+        user_credentials['credentials']['username'],
+        user_credentials['credentials']['password']
+    )

@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from src.user_credentials.domain.user_credentials import UserCredentials
+from src.common.domain.user_credentials import UserCredentials
 
 
 class UserCredentialsRepository(ABC):
