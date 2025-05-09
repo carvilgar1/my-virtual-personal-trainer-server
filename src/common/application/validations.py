@@ -2,83 +2,96 @@ import re
 from datetime import datetime
 from typing import Any
 
-from src.common.domain import (Error, ErrorLocalizable,
-                               UserCredentialsFormFields)
-from src.constants import (DATE_FORMAT, DATE_TIME_FORMAT, EMAIL_PATTERN,
+from src.common.application.localizations import localize as _
+from src.common.domain import Error
+from src.constants import (DATE_FORMAT, DATE_TIME_FORMAT,
+                           DEFAULT_MAX_VARCHAR_LENGTH, EMAIL_PATTERN,
                            CommonErrorCodes)
 
 __email_regex = re.compile(EMAIL_PATTERN)
 
 
-def build_empyt_field_error(field: str) -> Error:
-    return ErrorLocalizable(CommonErrorCodes.MISSING_MANDATORY_FIELD, CommonErrorCodes.MISSING_MANDATORY_FIELD, 'The field is required', field)
+def validate_mandatory_field(field_value: str | Any, field_key: str, language: str) -> tuple[bool, Error]:
+    if field_value and field_value.strip():
+        return True, None
+    message = _(CommonErrorCodes.MISSING_MANDATORY_FIELD, language)
+    if message:
+        message = message.format(field_key=field_key)
+    error = Error(CommonErrorCodes.MISSING_MANDATORY_FIELD,
+                  message, validation_field=field_key)
+    return False, error
 
 
-def build_invalid_email_error() -> Error:
-    return ErrorLocalizable(CommonErrorCodes.INVALID_EMAIL, CommonErrorCodes.INVALID_EMAIL, 'Invalid email format', UserCredentialsFormFields.EMAIL)
+def validate_content_length(field_value: str, lang: str, max_content_length_allowed=DEFAULT_MAX_VARCHAR_LENGTH) -> tuple[bool, Error]:
+    if len(field_value) < max_content_length_allowed:
+        return True, None
+    message = _(CommonErrorCodes.FIELD_TOO_LARGE, lang)
+    if message:
+        message = message.format(max_allowed_chars=max_content_length_allowed)
+    error = Error(CommonErrorCodes.FIELD_TOO_LARGE, message)
+    return False, error
+
+
+def build_unexpeted_server_error(e: Exception):
+    return Error(CommonErrorCodes.INTERNAL_SERVER_ERROR, str(e))
 
 
 def validate_email_format(email: str) -> bool:
     return __email_regex.match(email)
 
 
-def validate_integer(field: str | Any) -> tuple[int, Error]:
+def validate_integer(field: str | Any, language: str) -> tuple[int, Error]:
     try:
         number = int(field)
         return number, None
     except ValueError:
-        error = ErrorLocalizable(CommonErrorCodes.INVALID_INTEGER,
-                                 CommonErrorCodes.INVALID_INTEGER, 'Invalid integer')
+        error = Error(
+            CommonErrorCodes.INVALID_INTEGER, _(CommonErrorCodes.INVALID_INTEGER, language))
         return None, error
 
 
-def validate_float(field: str | Any) -> tuple[float, Error]:
+def validate_float(field: str | Any, language: str) -> tuple[float, Error]:
     try:
         decimal = float(field)
         return decimal, None
     except ValueError:
-        error = ErrorLocalizable(
-            CommonErrorCodes.INVALID_FLOAT, CommonErrorCodes.INVALID_FLOAT, 'Invalid float')
+        error = Error(CommonErrorCodes.INVALID_FLOAT, _(
+            CommonErrorCodes.INVALID_FLOAT, language))
         return None, error
 
 
-def validate_date(field: str | Any) -> tuple[datetime, Error]:
+def validate_date(field: str | Any, language: str) -> tuple[datetime, Error]:
     try:
         date = datetime.strptime(field, DATE_FORMAT)
         return date, None
     except ValueError:
-        error = ErrorLocalizable(CommonErrorCodes.INVALID_DATE, CommonErrorCodes.INVALID_DATE,
-                                 'The field must be a valid date, format yyyy-MM-dd is expected')
+        error = Error(CommonErrorCodes.INVALID_DATE, _(
+            CommonErrorCodes.INVALID_DATE, language))
         return None, error
 
 
-def validate_datetime(field: str | Any) -> tuple[datetime, Error]:
+def validate_datetime(field: str | Any, language: str) -> tuple[datetime, Error]:
     try:
         date = datetime.strptime(field, DATE_TIME_FORMAT)
         return date, None
     except ValueError:
-        error = ErrorLocalizable(CommonErrorCodes.INVALID_DATETIME, CommonErrorCodes.INVALID_DATETIME,
-                                 'The field must be a valid datetime, format ISO8601 yyyy-MM-ddTHH:mm:ss.ffffff±hh:mm is expected')
+        error = Error(CommonErrorCodes.INVALID_DATETIME,
+                      _(CommonErrorCodes.INVALID_DATETIME, language))
         return None, error
 
 
-def build_form_contains_errors_error() -> Error:
-    return ErrorLocalizable(CommonErrorCodes.FORM_CONTAINS_ERRORS, CommonErrorCodes.FORM_CONTAINS_ERRORS, 'Form contains errors')
-
-
 class BaseFormValidator:
-    def __init__(self):
-        self._errors: Error = None
+    def __init__(self, language: str = None):
+        self.language = language
+        self._errors = []
 
     def has_errors(self) -> bool:
-        return bool(self._errors)
+        return self._errors
 
     @property
     def errors(self) -> Error:
-        return self._errors
-
-    # Protected method to be called by subclasses to add errors
-    def _accumulate_error(self, error: Error):
-        if not self._errors:
-            self._errors = build_form_contains_errors_error()
-        self._errors.add_error(error)
+        error = None
+        if self.has_errors():
+            error = Error(CommonErrorCodes.FORM_CONTAINS_ERRORS, _(
+                CommonErrorCodes.FORM_CONTAINS_ERRORS, self.language), errors=self._errors)
+        return error

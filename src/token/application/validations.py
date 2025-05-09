@@ -1,84 +1,63 @@
-
-
-from binascii import Error
-
+from src.common.application.localizations import localize as _
+from src.common.application.user_credentials_validations import (
+    validate_email, validate_password, validate_username)
 from src.common.application.validations import (BaseFormValidator,
-                                                build_empyt_field_error,
-                                                build_invalid_email_error,
-                                                validate_email_format)
-from src.common.domain import (Error, ErrorLocalizable, UserCredentials,
-                               UserCredentialsFormFields)
-from src.constants import TokenErrorCodes
+                                                validate_email_format,
+                                                validate_mandatory_field)
+from src.common.domain import Error, UserCredentials, UserCredentialsFormFields
+from src.constants import CommonErrorCodes, TokenErrorCodes
 
 
-def build_wrong_user_credentials_error() -> Error:
-    return ErrorLocalizable(TokenErrorCodes.WRONG_USER_CREDENTIALS,
-                            TokenErrorCodes.WRONG_USER_CREDENTIALS,
-                            'Wrong user credentials',
-                            UserCredentialsFormFields.USERNAME)
+def validate_bearer_token(token: str, lang: str) -> tuple[str, Error]:
+    if not token:
+        error = Error(TokenErrorCodes.INVALID_AUTHORIZATION_HEADER,
+                      _(TokenErrorCodes.INVALID_AUTHORIZATION_HEADER, lang))
+        return None, error
 
+    if not 'Bearer ' in token:
+        error = Error(TokenErrorCodes.INVALID_AUTHORIZATION_TYPE,
+                      _(TokenErrorCodes.INVALID_AUTHORIZATION_TYPE, lang))
+        return None, error
 
-def build_wrong_password_error() -> Error:
-    parent_error = build_wrong_user_credentials_error()
-    wrong_password_error = ErrorLocalizable(TokenErrorCodes.WRONG_PASSWORD,
-                                            TokenErrorCodes.WRONG_PASSWORD,
-                                            'Wrong password',
-                                            UserCredentialsFormFields.PASSWORD)
-    parent_error.add_error(wrong_password_error)
-    return parent_error
-
-
-def build_user_not_found_error() -> Error:
-    parent_error = build_wrong_user_credentials_error()
-    user_not_found_error = ErrorLocalizable(TokenErrorCodes.USER_NOT_FOUND,
-                                            TokenErrorCodes.USER_NOT_FOUND,
-                                            'User not found',
-                                            UserCredentialsFormFields.USERNAME)
-    email_not_found_error = ErrorLocalizable(TokenErrorCodes.USER_NOT_FOUND,
-                                             TokenErrorCodes.USER_NOT_FOUND,
-                                             'Email not found',
-                                             UserCredentialsFormFields.EMAIL)
-    parent_error.add_error(user_not_found_error)
-    parent_error.add_error(email_not_found_error)
-    return parent_error
+    token = token.replace('Bearer ', '')
+    return token, None
 
 
 class TokenFormValidator(BaseFormValidator):
-    def __init__(self, user_credentials: UserCredentials):
-        super().__init__()
+    def __init__(self, user_credentials: UserCredentials, language: str):
+        super().__init__(language)
         self.username = user_credentials.username
         self.email = user_credentials.email
         self.password = user_credentials.password
 
     def validate(self):
         self.__validate_user_id()
-        self.__validate_password()
-
-    def __validate_password(self):
-        if not (self.password and self.password.strip()):
-            error = build_empyt_field_error(UserCredentialsFormFields.PASSWORD)
-            self._accumulate_error(error)
+        validate_password(self.password, self.language, self._errors)
 
     def __validate_user_id(self):
-        if self.__has_any_user_id():
-            self.__validate_email_format()
-        else:
+        found_any_user_id = False
+
+        if self.username:
+            if validate_username(self.username, self.language, self._errors):
+                found_any_user_id = True
+
+        if self.email:
+            if validate_email(self.email, self.language, self._errors):
+                found_any_user_id = True
+
+        if not found_any_user_id:
             self.__init_missing_user_id_errors()
 
-    def __has_any_user_id(self):
-        return self.username and self.username.strip() or \
-            self.email and self.email.strip()
-
-    def __validate_email_format(self):
-        if self.email:
-            if not validate_email_format(self.email):
-                error = build_invalid_email_error()
-                self._accumulate_error(error)
-
     def __init_missing_user_id_errors(self):
-        missing_username_error = ErrorLocalizable(TokenErrorCodes.MISSING_USER_IDENTIFIER, TokenErrorCodes.MISSING_USER_IDENTIFIER,
-                                                  'Either username or email should be provided', UserCredentialsFormFields.USERNAME)
-        missing_email_error = ErrorLocalizable(TokenErrorCodes.MISSING_USER_IDENTIFIER, TokenErrorCodes.MISSING_USER_IDENTIFIER,
-                                               'Either username or email should be provided', UserCredentialsFormFields.EMAIL)
-        self._accumulate_error(missing_username_error)
-        self._accumulate_error(missing_email_error)
+        missing_username_error = Error(
+            TokenErrorCodes.MISSING_USER_IDENTIFIER,
+            _(TokenErrorCodes.MISSING_USER_IDENTIFIER, self.language),
+            UserCredentialsFormFields.USERNAME
+        )
+        missing_email_error = Error(
+            TokenErrorCodes.MISSING_USER_IDENTIFIER,
+            _(TokenErrorCodes.MISSING_USER_IDENTIFIER, self.language),
+            UserCredentialsFormFields.EMAIL
+        )
+        self._errors.append(missing_username_error)
+        self._errors.append(missing_email_error)

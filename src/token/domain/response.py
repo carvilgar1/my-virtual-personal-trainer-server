@@ -1,26 +1,4 @@
-from datetime import datetime
-
 from src.common.domain import Response
-
-
-class TokenPayload:
-    def __init__(self, sub: str, username: str, email: str):
-        self.sub = sub
-        self.username = username
-        self.email = email
-
-    def set_expiration(self, expiration: int):
-        self.iat = datetime.now().timestamp()
-        self.exp = self.iat + expiration
-
-    def to_dict(self):
-        return {
-            'sub': self.sub,
-            'username': self.username,
-            'email': self.email,
-            'iat': int(self.iat),
-            'exp': int(self.exp)
-        }
 
 
 class JwtTokenResponse(Response):

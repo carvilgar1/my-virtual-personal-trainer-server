@@ -1,88 +1,46 @@
-import re
 
-from src.common.application import error_builders
-from src.common.application.validations import build_empyt_field_error
+from src.common.application.localizations import localize as _
+from src.common.application.user_credentials_validations import (
+    validate_email, validate_password, validate_username)
+from src.common.application.validations import BaseFormValidator
 from src.common.domain import (Error, UserCredentials,
                                UserCredentialsFormFields,
                                UserCredentialsRepository)
-from src.constants import (EMAIL_PATTERN, PASSWORD_ALLOWED_SYMBOLS,
-                           PASSWORD_MIN_LENGTH)
+from src.constants import SignUpErrorCodes
 
 
-def validate_password(password: str, errors: list[Error]) -> None:
-    is_filled = password and password.strip()
-    if not is_filled:
-        errors.append(build_empyt_field_error())
-        return
-
-    if len(password) < PASSWORD_MIN_LENGTH:
-        errors.append(error_builders.init_password_too_short_error())
-
-    if not any(char.islower() for char in password):
-        errors.append(error_builders.init_password_missing_lowercase_error())
-
-    if not any(char.isupper() for char in password):
-        errors.append(error_builders.init_password_missing_uppercase_error())
-
-    if not any(char.isdigit() for char in password):
-        errors.append(error_builders.init_password_missing_digit_error())
-
-    if not any(char in PASSWORD_ALLOWED_SYMBOLS for char in password):
-        errors.append(
-            error_builders.init_password_missing_special_character_error())
-
-
-def validate_email(email: str, errors: list[Error]) -> None:
-    is_filled = email and email.strip()
-    if not is_filled:
-        errors.append(build_empyt_field_error())
-        return
-
-    email_regex = re.compile(EMAIL_PATTERN)
-    if not email_regex.match(email):
-        errors.append(error_builders.init_email_format_error())
-
-
-def validate_username(username: str, errors: list[Error]) -> None:
-    is_filled = username and username.strip()
-    if not is_filled:
-        errors.append(build_empyt_field_error())
-
-
-class SignUpFormValidator:
-    def __init__(self, user_credentials: UserCredentials):
+class SignUpFormValidator(BaseFormValidator):
+    def __init__(self, user_credentials: UserCredentials, language: str):
+        super().__init__(language)
         self.email = user_credentials.email
         self.username = user_credentials.username
         self.password = user_credentials.password
 
-        self.__errors = []
-
-    def has_errors(self) -> bool:
-        return bool(self.__errors)
-
-    def get_errors(self) -> Error:
-        if self.has_errors():
-            return error_builders.init_form_contains_errors_error(self.__errors)
-        return None
-
     def validate(self) -> None:
-        validate_email(self.email, self.__errors)
-        validate_username(self.username, self.__errors)
-        validate_password(self.password, self.__errors)
+        validate_email(self.email, self.language, self._errors)
+        validate_username(self.username, self.language, self._errors)
+        validate_password(self.password, self.language, self._errors)
 
 
 class UniqueUserValidator:
-    def __init__(self, user_credentials_repository: UserCredentialsRepository, user_credentials: UserCredentials):
-        self.errors = []
+    def __init__(self, user_credentials_repository: UserCredentialsRepository, user_credentials: UserCredentials, language: str):
+        self._errors = []
+        self.language = language
 
         self.user_credentials_repository = user_credentials_repository
-        self.user_credentials = user_credentials
+        self.email = user_credentials.email
+        self.username = user_credentials.username
 
     def has_errors(self) -> bool:
-        return bool(self.errors)
+        return bool(self._errors)
 
-    def get_errors(self) -> Error:
-        return error_builders.init_user_already_registered_error(self.errors)
+    @property
+    def errors(self) -> Error:
+        error = None
+        if self.has_errors():
+            error = Error(SignUpErrorCodes.USER_ALREADY_REGISTERED, _(
+                SignUpErrorCodes.USER_ALREADY_REGISTERED, self.language), errors=self._errors)
+        return error
 
     def validate(self) -> None:
         self.__check_unique_username()
@@ -90,14 +48,16 @@ class UniqueUserValidator:
 
     def __check_unique_username(self):
         registered_user = self.user_credentials_repository.find_by_username(
-            self.user_credentials.username)
+            self.username)
         if registered_user:
-            error = error_builders.init_username_already_exists_error()
-            self.errors.append(error)
+            error = Error(SignUpErrorCodes.USERNAME_ALREADY_EXISTS, _(
+                SignUpErrorCodes.USERNAME_ALREADY_EXISTS, self.language), UserCredentialsFormFields.USERNAME)
+            self._errors.append(error)
 
     def __check_unique_email(self):
         registered_user = self.user_credentials_repository.find_by_email(
-            self.user_credentials.email)
+            self.email)
         if registered_user:
-            error = error_builders.init_email_already_exists_error()
-            self.errors.append(error)
+            error = Error(SignUpErrorCodes.EMAIL_ALREADY_EXISTS, _(
+                SignUpErrorCodes.EMAIL_ALREADY_EXISTS, self.language), UserCredentialsFormFields.EMAIL)
+            self._errors.append(error)

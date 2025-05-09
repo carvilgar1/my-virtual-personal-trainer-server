@@ -1,11 +1,13 @@
 from bcrypt import gensalt, hashpw
 from flask import Blueprint, jsonify, request
 
-from src.common.domain import (Error, Response, Status, UserCredentials,
-                               UserCredentialsFormFields)
-from src.common.locales.locales import CommonErrorCodes
+from src.common.application.localizations import localize as _
+from src.common.domain import (Response, Status, UserCredentials,
+                               UserCredentialsFormFields,
+                               UserCredentialsRepository,
+                               init_internal_server_error)
 from src.constants import DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM
-from src.settings import localizer, user_credentials_repository
+from src.settings import user_credentials_repository
 from src.sign_up.application.validations import (SignUpFormValidator,
                                                  UniqueUserValidator)
 
@@ -26,29 +28,31 @@ def handle_sign_up_request():
         language = request.args.get(LANGUAGE_GET_PARAM, DEFAULT_LANGUAGE)
         user_credentials = _get_user_credentials()
 
-        response, status = sign_up(user_credentials)
-        localizer.localize(response, language)
+        response, status = sign_up(
+            user_credentials_repository, user_credentials, language)
 
         return jsonify(response.to_json()), status
     except Exception as e:
-        error = Error(CommonErrorCodes.INTERNAL_SERVER_ERROR,
-                      CommonErrorCodes.INTERNAL_SERVER_ERROR,
-                      str(e))
-        return Response(Status.ERROR, error), 500
+        response = Response(Status.ERROR, init_internal_server_error(e))
+        return jsonify(response.to_json()), 500
 
 
-def sign_up(user_credentials: UserCredentials) -> tuple[Response, int]:
-    form_validator = SignUpFormValidator(user_credentials)
+def sign_up(
+        user_credentials_repository: UserCredentialsRepository,
+        user_credentials: UserCredentials,
+        lang: str
+) -> tuple[Response, int]:
+    form_validator = SignUpFormValidator(user_credentials, lang)
     form_validator.validate()
     if form_validator.has_errors():
-        error = form_validator.get_errors()
+        error = form_validator.errors
         return Response(Status.ERROR, error), 400
 
     unique_user_validator = UniqueUserValidator(
-        user_credentials_repository, user_credentials)
+        user_credentials_repository, user_credentials, lang)
     unique_user_validator.validate()
     if unique_user_validator.has_errors():
-        error = unique_user_validator.get_errors()
+        error = unique_user_validator.errors
         return Response(Status.ERROR, error), 400
 
     user_credentials.password = hashpw(

@@ -4,8 +4,8 @@
         "es": "Ocurrió un error desconocido, por favor contacte al soporte técnico"
     },
     "MISSING_MANDATORY_FIELD": {
-        "en": "The field is required",
-        "es": "El campo es requerido"
+        "en": "'{field_key}' is required",
+        "es": "'{field_key}' es obligatorio"
     },
     "INVALID_INTEGER": {
         "en": "The field must be an integer",
@@ -34,5 +34,9 @@
     "DATE_MUST_BE_IN_PAST": {
         "en": "The date must be in the past",
         "es": "La fecha debe ser en el pasado"
+    },
+    "FIELD_TOO_LARGE": {
+        "en": "The content is too long. The maximum allowed limit is {max_allowed_chars} characters",
+        "es": "El contenido es demasiado largo. El límite máximo permitido es de {max_allowed_chars} caracteres"
     }
 }

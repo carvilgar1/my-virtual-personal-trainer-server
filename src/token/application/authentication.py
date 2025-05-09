@@ -1,19 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Tuple
+from datetime import datetime
+from typing import Any, Optional
 
-import bcrypt
 import jwt
+from flask import jsonify, request
 
-from src.common.domain.errors import Error, ErrorLocalizable
-from src.common.domain.response import ResponseLocalizable, Status
-from src.common.domain.user_credentials import UserCredentials
-from src.common.domain.user_credentials_repository import \
-    UserCredentialsRepository
-from src.constants import TokenErrorCodes
-from src.token.application.validations import (TokenFormValidator,
-                                               build_user_not_found_error,
-                                               build_wrong_password_error)
-from src.token.domain.response import JwtTokenResponse, TokenPayload
+from src.common.application.localizations import localize as _
+from src.common.domain import Error, Response, Status, UserCredentials
+from src.constants import (DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM,
+                           CommonErrorCodes, TokenErrorCodes)
+from src.token.application.validations import validate_bearer_token
+from src.token.domain import JwtTokenResponse
 
 
 class AuthenticationService(ABC):
@@ -25,7 +22,7 @@ class AuthenticationService(ABC):
         pass
 
     @abstractmethod
-    def authenticate(self, auth_context: dict | Any) -> Tuple[UserCredentials, Error]:
+    def authenticate(self, auth_context: dict | Any) -> UserCredentials:
         pass
 
 
@@ -38,79 +35,75 @@ class JWTAuthenticationService(AuthenticationService):
         self.algorithm = algorithm
 
     def grant_access(self, user_credentials: UserCredentials) -> JwtTokenResponse:
-        token_payload = TokenPayload(
-            user_credentials.username, user_credentials.username, user_credentials.email)
+        token_payload = {
+            'sub': user_credentials.user_id,
+            'username': user_credentials.username,
+            'email': user_credentials.email
+        }
 
-        token_payload.set_expiration(self.access_token_expiration)
-        access_token = jwt.encode(token_payload.to_dict(
-        ), self.secret_key, algorithm=self.algorithm)
+        token_payload['iat'] = int(datetime.now().timestamp())
+        token_payload['exp'] = int(token_payload['iat'] +
+                                   self.access_token_expiration)
+        access_token = jwt.encode(
+            token_payload, self.secret_key, algorithm=self.algorithm)
 
-        token_payload.set_expiration(self.refresh_token_expiration)
-        refresh_token = jwt.encode(token_payload.to_dict(
-        ), self.refresh_secret_key, algorithm=self.algorithm)
+        token_payload['iat'] = int(datetime.now().timestamp())
+        token_payload['exp'] = int(token_payload['iat'] +
+                                   self.refresh_token_expiration)
+        refresh_token = jwt.encode(
+            token_payload, self.refresh_secret_key, algorithm=self.algorithm)
 
         return JwtTokenResponse(access_token, refresh_token, self.access_token_expiration)
 
-    def authenticate(self, auth_context: dict) -> Tuple[Optional[UserCredentials], Optional[Error]]:
-        try:
-            if 'refresh_token' in auth_context:
-                return self.__decode_refresh_token(auth_context), None
-            else:
-                return self.__decode_access_token(auth_context), None
-        except jwt.ExpiredSignatureError:
-            return None, build_expired_token_error()
-        except jwt.InvalidTokenError:
-            return None, build_invalid_token_error()
-        except Exception as e:
-            return None, build_unexpected_error(str(e))
-
-    def __decode_access_token(self, auth_context: dict) -> UserCredentials:
-        token = auth_context['access_token']
-        return self.__decode_token(token, self.secret_key)
-
-    def __decode_refresh_token(self, auth_context: dict) -> UserCredentials:
-        token = auth_context['refresh_token']
-        return self.__decode_token(token, self.refresh_secret_key)
+    def authenticate(self, auth_context: dict) -> UserCredentials:
+        access_token = auth_context.get('access_token')
+        refresh_token = auth_context.get('refresh_token')
+        if access_token:
+            return self.__decode_token(access_token, self.secret_key)
+        elif refresh_token:
+            return self.__decode_token(refresh_token, self.refresh_secret_key)
+        else:
+            raise AttributeError(
+                'No valid AuthContext were provided for JWTAuthenticationService')
 
     def __decode_token(self, token: str, secret_key: str) -> UserCredentials:
         decoded_payload = jwt.decode(
             token, secret_key, algorithms=[self.algorithm])
+
         return UserCredentials(
-            id=decoded_payload['sub'],
-            username=decoded_payload['username'],
-            email=decoded_payload['email'],
-            password=None
+            decoded_payload['sub'],
+            decoded_payload['email'],
+            decoded_payload['username'],
+            None
         )
 
 
-def generate_new_token(
-    user_credentials_repository: UserCredentialsRepository,
-    authentication_service: AuthenticationService,
-    user_credentials: UserCredentials
-) -> Tuple[ResponseLocalizable, int]:
-    form_validator = TokenFormValidator(user_credentials)
-    form_validator.validate()
-    if form_validator.has_errors():
-        return ResponseLocalizable(Status.ERROR, form_validator.errors), 400
+def authorization_required(authentication_service: AuthenticationService, required_secret='access_token'):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                token = request.headers.get('Authorization')
+                lang = request.args.get(LANGUAGE_GET_PARAM, DEFAULT_LANGUAGE)
+                token, errors = validate_bearer_token(token, lang)
+                if errors:
+                    response = Response(Status.ERROR, errors)
+                    return jsonify(response.to_json()), 400
 
-    current_user = user_credentials_repository.find_by_username_or_email(
-        user_credentials.username, user_credentials.email)
-    if not current_user:
-        return ResponseLocalizable(Status.ERROR, build_user_not_found_error()), 404
-    if not bcrypt.checkpw(user_credentials.password.encode('utf-8'), current_user.password):
-        return ResponseLocalizable(Status.ERROR, build_wrong_password_error()), 401
-
-    jwt_token = authentication_service.grant_access(user_credentials)
-    return jwt_token, 200
-
-
-def build_expired_token_error() -> Error:
-    return ErrorLocalizable(TokenErrorCodes.EXPIRED_TOKEN, TokenErrorCodes.EXPIRED_TOKEN, 'Expired token')
-
-
-def build_invalid_token_error() -> Error:
-    return ErrorLocalizable(TokenErrorCodes.INVALID_TOKEN, TokenErrorCodes.INVALID_TOKEN, 'Invalid token')
-
-
-def build_unexpected_error(message: str) -> Error:
-    return Error(TokenErrorCodes.UNEXPECTED_ERROR, message)
+                auth_context = {required_secret: token}
+                current_user = authentication_service.authenticate(
+                    auth_context)
+                return func(current_user, *args, **kwargs)
+            except jwt.ExpiredSignatureError:
+                response = Response(Status.ERROR, Error(
+                    TokenErrorCodes.EXPIRED_TOKEN, _(TokenErrorCodes.EXPIRED_TOKEN, lang)))
+                return jsonify(response.to_json()), 401
+            except jwt.InvalidTokenError:
+                response = Response(Status.ERROR, Error(
+                    TokenErrorCodes.INVALID_TOKEN, _(TokenErrorCodes.INVALID_TOKEN, lang)))
+                return jsonify(response.to_json()), 401
+            except Exception as e:
+                response = Response(Status.ERROR, Error(
+                    CommonErrorCodes.INTERNAL_SERVER_ERROR, str(e)))
+                return jsonify(response.to_json()), 500
+        return wrapper
+    return decorator
