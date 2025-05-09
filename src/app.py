@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 
 from src.sign_up.controllers.controllers import sign_up_blueprint
-from src.token.controllers.controllers import token_blueprint
+from src.token_auth.controllers.controllers import token_blueprint
 
 app = Flask(__name__)
 

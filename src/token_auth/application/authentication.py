@@ -9,8 +9,8 @@ from src.common.application.localizations import localize as _
 from src.common.domain import Error, Response, Status, UserCredentials
 from src.constants import (DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM,
                            CommonErrorCodes, TokenErrorCodes)
-from src.token.application.validations import validate_bearer_token
-from src.token.domain import JwtTokenResponse
+from src.token_auth.application.validations import validate_bearer_token
+from src.token_auth.domain import JwtTokenResponse
 
 
 class AuthenticationService(ABC):

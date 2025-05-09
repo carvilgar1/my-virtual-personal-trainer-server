@@ -86,7 +86,7 @@ class BaseFormValidator:
         self._errors = []
 
     def has_errors(self) -> bool:
-        return self._errors
+        return bool(self._errors)
 
     @property
     def errors(self) -> Error:

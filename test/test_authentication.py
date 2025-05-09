@@ -7,7 +7,7 @@ from flask import Flask
 
 from src.common.domain import Status, UserCredentials
 from src.constants import CommonErrorCodes, TokenErrorCodes
-from src.token.application.authentication import (AuthenticationService,
+from src.token_auth.application.authentication import (AuthenticationService,
                                                   JWTAuthenticationService,
                                                   authorization_required)
 
@@ -18,7 +18,7 @@ class TestAuthorizationRequiredMiddleware(unittest.TestCase):
         self.client = self.app.test_client()
         self.mock_auth_service = MagicMock(AuthenticationService)
 
-    @patch('src.token.application.authentication.validate_bearer_token')
+    @patch('src.token_auth.application.authentication.validate_bearer_token')
     def test_authorization_required_valid_token(self, mock_validate_bearer_token):
         mock_validate_bearer_token.return_value = ('valid_token', None)
         user_credentials_mock = MagicMock(UserCredentials)
@@ -37,7 +37,7 @@ class TestAuthorizationRequiredMiddleware(unittest.TestCase):
         self.assertIn('Access granted', response.json['message'])
         self.assertIn(user_credentials_mock.username, response.json['user'])
 
-    @patch('src.token.application.authentication.validate_bearer_token')
+    @patch('src.token_auth.application.authentication.validate_bearer_token')
     def test_authorization_required_invalid_token(self, mock_validate_bearer_token):
         mock_validate_bearer_token.return_value = ('valid_token', None)
         self.mock_auth_service.authenticate.side_effect = jwt.InvalidTokenError
@@ -55,7 +55,7 @@ class TestAuthorizationRequiredMiddleware(unittest.TestCase):
         self.assertEqual(response.json['error']
                          ['code'], TokenErrorCodes.INVALID_TOKEN)
 
-    @patch('src.token.application.authentication.validate_bearer_token')
+    @patch('src.token_auth.application.authentication.validate_bearer_token')
     def test_authorization_required_expired_token(self, mock_validate_bearer_token):
         mock_validate_bearer_token.return_value = ('valid_token', None)
         self.mock_auth_service.authenticate.side_effect = jwt.ExpiredSignatureError
@@ -73,7 +73,7 @@ class TestAuthorizationRequiredMiddleware(unittest.TestCase):
         self.assertEqual(response.json['error']
                          ['code'], TokenErrorCodes.EXPIRED_TOKEN)
 
-    @patch('src.token.application.authentication.validate_bearer_token')
+    @patch('src.token_auth.application.authentication.validate_bearer_token')
     def test_authorization_required_internal_server_error(self, mock_validate_bearer_token):
         mock_validate_bearer_token.return_value = ('valid_token', None)
         self.mock_auth_service.authenticate.side_effect = Exception(

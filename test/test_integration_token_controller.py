@@ -8,7 +8,7 @@ import jwt
 from flask import Flask
 
 from src.common.domain.user_credentials import UserCredentials
-from src.token.controllers.controllers import (handle_new_token_request,
+from src.token_auth.controllers.controllers import (handle_new_token_request,
                                                handle_refresh_token_request)
 
 
@@ -26,7 +26,7 @@ class TestIntegrationTokenControllerBase(unittest.TestCase):
                 return None
 
         cls.mock_find_user_patch = patch(
-            'src.token.controllers.controllers.user_credentials_repository.find_by_username_or_email')
+            'src.token_auth.controllers.controllers.user_credentials_repository.find_by_username_or_email')
         cls.mock_find_user = cls.mock_find_user_patch.start()
         cls.mock_find_user.side_effect = get_existing_user_side_effect
 
@@ -115,7 +115,7 @@ class TestHandleNewTokenTokenRequestIntegration(TestIntegrationTokenControllerBa
         self.assertEqual('El formulario contiene errores',
                          response.json['error']['message'])
 
-    @patch('src.token.controllers.controllers.user_credentials_repository.find_by_username_or_email')
+    @patch('src.token_auth.controllers.controllers.user_credentials_repository.find_by_username_or_email')
     def test_handle_new_token_request_raises_exception(self, mock_find_user):
         mock_find_user.side_effect = Exception('Test exception')
 
@@ -210,7 +210,7 @@ class TestHandleRefreshTokenRequestIntegration(TestIntegrationTokenControllerBas
         self.assertIsNotNone(response.json['error'])
         self.assertEqual('INVALID_TOKEN', response.json['error']['code'])
 
-    @patch('src.token.controllers.controllers.user_credentials_repository.find_by_username_or_email')
+    @patch('src.token_auth.controllers.controllers.user_credentials_repository.find_by_username_or_email')
     def test_handle_refresh_token_request_raises_exception(self, mock_find_user):
         mock_find_user.side_effect = Exception('Test exception')
 

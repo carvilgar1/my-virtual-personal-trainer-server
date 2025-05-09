@@ -2,7 +2,7 @@ import unittest
 
 from src.common.domain import UserCredentials, UserCredentialsFormFields
 from src.constants import CommonErrorCodes, TokenErrorCodes
-from src.token.application.validations import TokenFormValidator
+from src.token_auth.application.validations import TokenFormValidator
 
 
 class TestTokenFormValidator(unittest.TestCase):

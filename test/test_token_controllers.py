@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 
 from src.common.domain import Status, UserCredentials
 from src.constants import TokenErrorCodes
-from src.token.controllers.controllers import generate_new_token, refresh_token
-from src.token.domain.response import JwtTokenResponse
+from src.token_auth.controllers.controllers import generate_new_token, refresh_token
+from src.token_auth.domain.response import JwtTokenResponse
 
 
 class TestGenerateNewTokenController(unittest.TestCase):
@@ -13,7 +13,7 @@ class TestGenerateNewTokenController(unittest.TestCase):
         self.user_repository_mock = MagicMock()
         self.mock_auth_service = MagicMock()
 
-    @patch('src.token.controllers.controllers.bcrypt.checkpw')
+    @patch('src.token_auth.controllers.controllers.bcrypt.checkpw')
     def test_generate_new_token_success(self, mock_bcrypt_checkpw):
         user_credentials = UserCredentials(
             None, 'test@example.com', 'testuser', 'T3stP@ss')
@@ -39,7 +39,7 @@ class TestGenerateNewTokenController(unittest.TestCase):
         self.assertEqual(token_json_payload['token_type'],
                          expected_token_response.token_type)
 
-    @patch('src.token.controllers.controllers.bcrypt.checkpw')
+    @patch('src.token_auth.controllers.controllers.bcrypt.checkpw')
     def test_generate_new_token_invalid_credentials_error(self, mock_bcrypt_checkpw):
         user_credentials = UserCredentials(
             None, 'test@example.com', 'testuser', 'T3stP@ss')

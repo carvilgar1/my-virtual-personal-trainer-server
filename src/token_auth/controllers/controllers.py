@@ -8,9 +8,9 @@ from src.common.domain import (Error, Response, Status, UserCredentials,
                                UserCredentialsRepository)
 from src.constants import DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM, TokenErrorCodes
 from src.settings import authentication_service, user_credentials_repository
-from src.token.application.authentication import (AuthenticationService,
+from src.token_auth.application.authentication import (AuthenticationService,
                                                   authorization_required)
-from src.token.application.validations import TokenFormValidator
+from src.token_auth.application.validations import TokenFormValidator
 
 token_blueprint = Blueprint('token', __name__, url_prefix='/token')
 

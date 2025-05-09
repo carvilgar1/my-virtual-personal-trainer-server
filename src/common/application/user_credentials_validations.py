@@ -8,7 +8,7 @@ from src.constants import (MAX_USERNAME_CHARS, PASSWORD_ALLOWED_SYMBOLS,
                            SignUpErrorCodes)
 
 
-def validate_password(password: str, lang: str, errors: list[Error]) -> None:
+def validate_password(password: str, lang: str, errors: list[Error]) -> bool:
     is_filled, error = validate_mandatory_field(
         password, UserCredentialsFormFields.PASSWORD, lang)
     if not is_filled:

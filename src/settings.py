@@ -8,7 +8,7 @@ from src.common.application.localizations import (PlaceHolderReplacer,
 from src.common.domain import UserCredentialsFormFields
 from src.common.infrastructure.user_credentials_mongodb_repository import \
     UserCredentialsMongoDBRepository
-from src.token.application.authentication import JWTAuthenticationService
+from src.token_auth.application.authentication import JWTAuthenticationService
 
 # ==============================================
 # Enviroment variables
