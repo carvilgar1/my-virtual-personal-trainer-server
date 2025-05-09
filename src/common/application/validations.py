@@ -32,7 +32,7 @@ def validate_content_length(field_value: str, lang: str, max_content_length_allo
     return False, error
 
 
-def build_unexpeted_server_error(e: Exception):
+def build_unexpected_server_error(e: Exception):
     return Error(CommonErrorCodes.INTERNAL_SERVER_ERROR, str(e))
 
 

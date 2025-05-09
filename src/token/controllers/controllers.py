@@ -2,7 +2,7 @@ import bcrypt
 from flask import Blueprint, jsonify, request
 
 from src.common.application.localizations import localize as _
-from src.common.application.validations import build_unexpeted_server_error
+from src.common.application.validations import build_unexpected_server_error
 from src.common.domain import (Error, Response, Status, UserCredentials,
                                UserCredentialsFormFields,
                                UserCredentialsRepository)
@@ -26,7 +26,7 @@ def handle_new_token_request():
         return jsonify(response.to_json()), status
 
     except Exception as e:
-        response = Response(Status.ERROR, build_unexpeted_server_error(e))
+        response = Response(Status.ERROR, build_unexpected_server_error(e))
         return jsonify(response.to_json()), 500
 
 
@@ -41,7 +41,7 @@ def handle_refresh_token_request(current_user: UserCredentials):
         return jsonify(response.to_json()), status
 
     except Exception as e:
-        response = Response(Status.ERROR, build_unexpeted_server_error(e))
+        response = Response(Status.ERROR, build_unexpected_server_error(e))
         return jsonify(response.to_json()), 500
 
 
