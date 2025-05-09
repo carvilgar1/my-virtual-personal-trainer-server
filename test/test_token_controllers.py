@@ -3,7 +3,8 @@ from unittest.mock import MagicMock, patch
 
 from src.common.domain import Status, UserCredentials
 from src.constants import TokenErrorCodes
-from src.token_auth.controllers.controllers import generate_new_token, refresh_token
+from src.token_auth.controllers.controllers import (generate_new_token,
+                                                    refresh_token)
 from src.token_auth.domain.response import JwtTokenResponse
 
 

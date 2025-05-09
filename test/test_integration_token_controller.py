@@ -8,8 +8,8 @@ import jwt
 from flask import Flask
 
 from src.common.domain.user_credentials import UserCredentials
-from src.token_auth.controllers.controllers import (handle_new_token_request,
-                                               handle_refresh_token_request)
+from src.token_auth.controllers.controllers import (
+    handle_new_token_request, handle_refresh_token_request)
 
 
 class TestIntegrationTokenControllerBase(unittest.TestCase):
