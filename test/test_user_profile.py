@@ -11,6 +11,7 @@ class TestUserProfile(unittest.TestCase):
     def test_initialization(self):
         birth_date = datetime(1990, 1, 1)
         user = UserProfile(
+            profile_completed=True,
             name="Test",
             surname="User",
             birth_date=birth_date,
@@ -35,6 +36,7 @@ class TestUserProfile(unittest.TestCase):
 
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
+            profile_completed=True,
             name="",
             surname="",
             birth_date=birth_date,
@@ -53,6 +55,7 @@ class TestUserProfile(unittest.TestCase):
 
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
+            profile_completed=True,
             name="",
             surname="",
             birth_date=birth_date,
@@ -71,6 +74,7 @@ class TestUserProfile(unittest.TestCase):
 
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
+            profile_completed=True,
             name="",
             surname="",
             birth_date=birth_date,
@@ -86,6 +90,7 @@ class TestUserProfile(unittest.TestCase):
     def test_to_json(self):
         birth_date = datetime(1990, 1, 1)
         user = UserProfile(
+            profile_completed=True,
             name="Test",
             surname="User",
             birth_date=birth_date,
