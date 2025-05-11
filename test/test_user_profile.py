@@ -1,7 +1,10 @@
 import unittest
 from datetime import datetime
 from unittest.mock import patch
-from src.user_profile.domain.user_profile import UserProfile, Gender, ActivityLevel
+
+from src.user_profile.domain.user_profile import (ActivityLevel, Gender,
+                                                  UserProfile)
+
 
 class TestUserProfile(unittest.TestCase):
 
@@ -29,7 +32,7 @@ class TestUserProfile(unittest.TestCase):
     @patch('src.user_profile.domain.user_profile.datetime')
     def test_age_computation_on_same_birthday(self, mock_datetime):
         mock_datetime.now.return_value = datetime(2025, 4, 13)
-        
+
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
             name="",
@@ -43,11 +46,11 @@ class TestUserProfile(unittest.TestCase):
         )
         age = user.get_age()
         self.assertEqual(age, 25)
-    
+
     @patch('src.user_profile.domain.user_profile.datetime')
     def test_age_for_day_before_birthday(self, mock_datetime):
         mock_datetime.now.return_value = datetime(2025, 4, 12)
-        
+
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
             name="",
@@ -61,11 +64,11 @@ class TestUserProfile(unittest.TestCase):
         )
         age = user.get_age()
         self.assertEqual(age, 24)
-    
+
     @patch('src.user_profile.domain.user_profile.datetime')
     def test_get_age_for_birthday_in_future(self, mock_datetime):
         mock_datetime.now.return_value = datetime(2026, 6, 18)
-        
+
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
             name="",
@@ -95,7 +98,7 @@ class TestUserProfile(unittest.TestCase):
         user_json = user.to_json()
         self.assertEqual(user_json['name'], "Test")
         self.assertEqual(user_json['surname'], "User")
-        self.assertEqual(user_json['birth_date'], birth_date.strftime("%Y-%m-%d"))
+        self.assertEqual(user_json['birth_date'], '1990-01-01')
         self.assertEqual(user_json['weight'], 70.0)
         self.assertEqual(user_json['height'], 175.0)
         self.assertEqual(user_json['max_heart_rate'], 190.0)

@@ -19,7 +19,8 @@ class ActivityLevel(Enum):
 
 
 class UserProfile:
-    def __init__(self, name: str, surname: str, birth_date: datetime, weight: float, height: float, max_heart_rate: float, gender: Gender, activity_level: ActivityLevel):
+    def __init__(self, profile_completed: bool, name: str, surname: str, birth_date: datetime, weight: float, height: float, max_heart_rate: float, gender: Gender, activity_level: ActivityLevel):
+        self._profile_completed = profile_completed
         self.name = name
         self.surname = surname
         self.birth_date = birth_date
