@@ -11,7 +11,7 @@ class UserProfileRepository(ABC):
         pass
 
     @abstractmethod
-    def update(self, user_id: str, user_profile: UserProfile) -> None:
+    def update(self, user_id: str, user_profile: dict) -> None:
         pass
 
     @abstractmethod

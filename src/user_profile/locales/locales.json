@@ -1,0 +1,10 @@
+{
+    "USER_PROFILE_NOT_FOUND": {
+        "en": "User not found",
+        "es": "Usuario no encontrado"
+    },
+    "USER_PROFILE_NOT_COMPLETED": {
+        "en": "Profile not completed, please try to save a new profile before checking it",
+        "es": "Perfil no completado, por favor intenta guardar un nuevo perfil antes de consultarlo"
+    }
+}

@@ -8,10 +8,6 @@ class Status(Enum):
     ERROR = 'Error'
 
 
-def init_internal_server_error(exception):
-    return Error(CommonErrorCodes.INTERNAL_SERVER_ERROR, str(exception))
-
-
 class Error:
     def __init__(self, code: str, message: str, validation_field: str = None, errors: list['Error'] = None):
         if not code:

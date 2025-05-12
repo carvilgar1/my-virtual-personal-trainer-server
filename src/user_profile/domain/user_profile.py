@@ -18,11 +18,18 @@ class ActivityLevel(Enum):
     EXTRA_ACTIVE = 4
 
 
+class UserProfileFormKeys:
+    BIRTH_DATE = 'birthDate'
+    WEIGHT = 'weight'
+    HEIGHT = 'height'
+    MAX_HEART_RATE = 'maxHeartRate'
+    GENDER = 'gender'
+    ACTIVITY_LEVEL = 'activityLevel'
+
+
 class UserProfile:
-    def __init__(self, profile_completed: bool, name: str, surname: str, birth_date: datetime, weight: float, height: float, max_heart_rate: float, gender: Gender, activity_level: ActivityLevel):
+    def __init__(self, profile_completed: bool, birth_date: datetime, weight: float, height: float, max_heart_rate: float, gender: Gender, activity_level: ActivityLevel):
         self._profile_completed = profile_completed
-        self.name = name
-        self.surname = surname
         self.birth_date = birth_date
         self.weight = weight
         self.height = height
@@ -39,8 +46,6 @@ class UserProfile:
 
     def to_json(self) -> dict:
         return {
-            'name': self.name,
-            'surname': self.surname,
             'birth_date': self.birth_date.strftime(DATE_FORMAT),
             'age': self.get_age(),
             'weight': self.weight,

@@ -1,11 +1,11 @@
 from bcrypt import gensalt, hashpw
 from flask import Blueprint, jsonify, request
 
+from src.common.application.error_builders import init_internal_server_error
 from src.common.application.localizations import localize as _
 from src.common.domain import (Response, Status, UserCredentials,
                                UserCredentialsFormFields,
-                               UserCredentialsRepository,
-                               init_internal_server_error)
+                               UserCredentialsRepository)
 from src.constants import DEFAULT_LANGUAGE, LANGUAGE_GET_PARAM
 from src.settings import user_credentials_repository
 from src.sign_up.application.validations import (SignUpFormValidator,
