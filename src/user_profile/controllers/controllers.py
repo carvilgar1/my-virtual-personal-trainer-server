@@ -47,7 +47,7 @@ def save_user_profile(
     user_profile_validator.validate()
     if user_profile_validator.has_errors():
         response = Response(Status.ERROR, user_profile_validator.errors)
-        return jsonify(response.to_json()), 400
+        return response, 400
 
     user_profile = user_profile_validator.user_profile
     user_profile_repository.save(

@@ -13,7 +13,7 @@ from src.user_profile.infrastructure.user_profile_mongodb_repository import \
 
 class TestUserProfileMongoDBRepository(unittest.TestCase):
     @patch('src.user_profile.infrastructure.user_profile_mongodb_repository.MongoClient')
-    def test_update(self, mock_mongo_client):
+    def test_partial_update(self, mock_mongo_client):
         # Arrange
         mock_collection = MagicMock(spec=Collection)
         mock_db = {'users': mock_collection}
@@ -42,6 +42,46 @@ class TestUserProfileMongoDBRepository(unittest.TestCase):
                     'birthDate': user_profile.birth_date,
                     'weight': user_profile.weight,
                     'activityLevel': user_profile.activity_level.value
+                }
+            }
+        )
+        
+    @patch('src.user_profile.infrastructure.user_profile_mongodb_repository.MongoClient')
+    def test_full_update(self, mock_mongo_client):
+        # Arrange
+        mock_collection = MagicMock(spec=Collection)
+        mock_db = {'users': mock_collection}
+        mock_client = {'test_database': mock_db}
+        mock_mongo_client.return_value = mock_client
+
+        settings = {'uri': 'mongodb://localhost:27017',
+                    'database': 'test_database'}
+        repository = UserProfileMongoDBRepository(settings)
+
+        user_id = '682216745ea2078f68384d16'
+        user_profile = UserProfile(
+            birth_date='1990-01-01',
+            weight=70,
+            height=175,
+            max_heart_rate=190,
+            gender=Gender.MALE,
+            activity_level=ActivityLevel.MODERATELY_ACTIVE
+        )
+
+        # Act
+        repository.update(user_id, user_profile)
+
+        # Assert
+        mock_collection.update_one.assert_called_once_with(
+            {'_id': ObjectId(user_id)},
+            {
+                '$set': {
+                        'birthDate': user_profile.birth_date,
+                        'weight': user_profile.weight,
+                        'height': user_profile.height,
+                        'maxHeartRate': user_profile.max_heart_rate,
+                        'gender': user_profile.gender.value,
+                        'activityLevel': user_profile.activity_level.value
                 }
             }
         )
