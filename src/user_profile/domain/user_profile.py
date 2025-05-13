@@ -28,8 +28,9 @@ class UserProfileFormKeys:
 
 
 class UserProfile:
-    def __init__(self, profile_completed: bool, birth_date: datetime, weight: float, height: float, max_heart_rate: float, gender: Gender, activity_level: ActivityLevel):
-        self._profile_completed = profile_completed
+    def __init__(self, birth_date: datetime, weight: float, height: float, max_heart_rate: float, gender: Gender, activity_level: ActivityLevel):
+        self._profile_completed = False
+
         self.birth_date = birth_date
         self.weight = weight
         self.height = height

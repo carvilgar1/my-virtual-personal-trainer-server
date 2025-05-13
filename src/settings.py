@@ -74,7 +74,13 @@ def init_placeholder_replacements():
         'password': UserCredentialsFormFields.PASSWORD,
         'password_min_length': str(constants.PASSWORD_MIN_LENGTH),
         'username_max_chars': str(constants.MAX_USERNAME_CHARS),
-        'password_allowed_symbols': ''.join(constants.PASSWORD_ALLOWED_SYMBOLS)
+        'password_allowed_symbols': ''.join(constants.PASSWORD_ALLOWED_SYMBOLS),
+        'min_height': str(constants.MIN_HEIGHT),
+        'max_height': str(constants.MAX_HEIGHT),
+        'min_weight': str(constants.MIN_WEIGHT),
+        'max_weight': str(constants.MAX_WEIGHT),
+        'min_heart_rate': str(constants.MIN_HEART_RATE),
+        'max_heart_rate': str(constants.MAX_HEART_RATE),
     }
 
 

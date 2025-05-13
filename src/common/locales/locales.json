@@ -40,7 +40,7 @@
         "es": "El contenido es demasiado largo. El límite máximo permitido es de {max_allowed_chars} caracteres"
     },
     "INVALID_VALUE": {
-        "en": "'{invalid_value}' is not recognized, the accepted values are: {valid_values}",
-        "es": "'{invalid_value}' es reconocido, los valores aceptados son: {valid_values}"
+        "en": "The value could not be recognized. The expected values ​​are {expected_values}",
+        "es": "El valor no pudo ser reconocido. Los valores esperados son {expected_values}"
     }
 }

@@ -16,19 +16,12 @@ class UserProfileMongoDBRepository(UserProfileRepository):
         self.db = self.client[settings['database']]
         self.collection = self.db['users']
 
-    def save(self, user_id: str, user_profile: UserProfile) -> None:
+    def save(self, user_id: str, user_profile: dict) -> None:
+        user_profile['_profile_completed'] = True
         self.collection.update_one(
             {"_id": ObjectId(user_id)},
             {
-                '$set': {
-                    '_profile_completed': True,
-                    'birthDate': user_profile.birth_date,
-                    'weight': user_profile.weight,
-                    'height': user_profile.height,
-                    'maxHeartRate': user_profile.max_heart_rate,
-                    'gender': user_profile.gender.value,
-                    'activityLevel': user_profile.activity_level.value
-                }
+                '$set': user_profile
             }
         )
 

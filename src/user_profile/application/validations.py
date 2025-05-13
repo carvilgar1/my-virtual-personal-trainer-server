@@ -1,118 +1,162 @@
+from datetime import datetime
+
 from src.common.application.error_builders import init_missing_field_error
 from src.common.application.localizations import localize as _
 from src.common.application.validations import (BaseFormValidator,
-                                                validate_date, validate_float,
-                                                validate_mandatory_field)
+                                                validate_date, validate_float)
 from src.common.domain import Error
-from src.constants import CommonErrorCodes
+from src.constants import (MAX_HEART_RATE, MAX_HEIGHT, MAX_WEIGHT,
+                           MIN_HEART_RATE, MIN_HEIGHT, MIN_WEIGHT,
+                           CommonErrorCodes, UserProfileErrorCodes)
 from src.user_profile.domain.user_profile import (ActivityLevel, Gender,
                                                   UserProfileFormKeys)
 
 
-class UserProfileFormValidator(BaseFormValidator):
+class SaveUserProfileFormValidator(BaseFormValidator):
+    gender_enum = ', '.join([gender.name for gender in Gender])
+    activity_level_enum = ', '.join(
+        [activity_level.name for activity_level in ActivityLevel])
+
     def __init__(self, form: dict, language: str):
         super().__init__(language)
 
         self.form = form
         self.user_profile = {}
 
-    def _validate_date_of_birth(self) -> None:
-        birth_date = self.form.get(UserProfileFormKeys.BIRTH_DATE)
-        filled, error = validate_mandatory_field(
-            birth_date, UserProfileFormKeys.BIRTH_DATE, self.language)
-        if filled:
-            valid_date, error = validate_date(birth_date, self.language)
-            if valid_date:
-                self.user_profile[UserProfileFormKeys.BIRTH_DATE] = valid_date
-            else:
-                self._errors.append(error)
-        else:
-            self._errors.append(error)
+    def validate(self) -> None:
+        self.validate_birth_date()
+        self.validate_height()
+        self.validate_weight()
+        self.validate_max_heart_rate()
+        self.validate_gender()
+        self.validate_activity_level()
 
-    def _validate_weight(self) -> None:
-        self._validate_decimal_field(UserProfileFormKeys.WEIGHT)
-
-    def _validate_height(self) -> None:
-        self._validate_decimal_field(UserProfileFormKeys.HEIGHT)
-
-    def _validate_max_heart_rate(self) -> None:
-        self._validate_decimal_field(UserProfileFormKeys.MAX_HEART_RATE)
-
-    def _validate_decimal_field(self, field_key: str) -> None:
-        field_value = self.form.get(field_key, None)
-        if field_value:
-            field_value, errors = validate_float(
-                field_value, self.language)
-            if errors:
-                self._errors.append(errors)
-            else:
-                self.user_profile[field_key] = field_value
-        else:
-            error = init_missing_field_error(field_key, self.language)
-            self._errors.append(error)
-
-    def _validate_gender(self) -> None:
-        gender = self.form.get(UserProfileFormKeys.GENDER)
-        filled, error = validate_mandatory_field(
-            gender, UserProfileFormKeys.GENDER, self.language)
-        if filled:
-            try:
-                gender = Gender[gender]
-                self.user_profile[UserProfileFormKeys.GENDER] = gender
-            except Exception:
-                code = CommonErrorCodes.INVALID_VALUE
-                mesesage = _(CommonErrorCodes.INVALID_VALUE, self.language)
-                if mesesage:
-                    mesesage = mesesage.format(
-                        invalid_value=gender, valid_values=', '.join([x.name for x in Gender]))
-                error = Error(code, mesesage)
-                self._errors.append(error)
-        else:
-            self._errors.append(error)
-
-    def _validate_activity_level(self) -> None:
+    def validate_activity_level(self):
         activity_level = self.form.get(UserProfileFormKeys.ACTIVITY_LEVEL)
-        filled, error = validate_mandatory_field(
-            activity_level, UserProfileFormKeys.ACTIVITY_LEVEL, self.language)
-        if filled:
+        if activity_level:
             try:
                 activity_level = ActivityLevel[activity_level]
-                self.user_profile[UserProfileFormKeys.ACTIVITY_LEVEL] = activity_level
-            except Exception:
-                code = CommonErrorCodes.INVALID_VALUE
-                mesesage = _(CommonErrorCodes.INVALID_VALUE, self.language)
-                if mesesage:
-                    mesesage = mesesage.format(invalid_value=activity_level, valid_values=', '.join(
-                        [x.name for x in ActivityLevel]))
-                error = Error(code, mesesage)
+                self.user_profile[UserProfileFormKeys.ACTIVITY_LEVEL] = activity_level.value
+            except KeyError:
+                message = _(CommonErrorCodes.INVALID_VALUE, self.language)
+                if message:
+                    message = message.format(
+                        expected_values=self.activity_level_enum)
+                error = Error(CommonErrorCodes.INVALID_VALUE,
+                              message, UserProfileFormKeys.ACTIVITY_LEVEL)
                 self._errors.append(error)
         else:
+            error = init_missing_field_error(
+                UserProfileFormKeys.ACTIVITY_LEVEL, self.language)
             self._errors.append(error)
 
-    def validate(self) -> None:
-        self._validate_date_of_birth()
-        self._validate_weight()
-        self._validate_height()
-        self._validate_max_heart_rate()
-        self._validate_gender()
-        self._validate_activity_level()
+    def validate_gender(self):
+        gender = self.form.get(UserProfileFormKeys.GENDER)
+        if gender:
+            try:
+                gender = Gender[gender]
+                self.user_profile[UserProfileFormKeys.GENDER] = gender.value
+            except KeyError:
+                message = _(CommonErrorCodes.INVALID_VALUE, self.language)
+                if message:
+                    message = message.format(expected_values=self.gender_enum)
+                error = Error(CommonErrorCodes.INVALID_VALUE,
+                              message, UserProfileFormKeys.GENDER)
+                self._errors.append(error)
+        else:
+            error = init_missing_field_error(
+                UserProfileFormKeys.GENDER, self.language)
+            self._errors.append(error)
+
+    def validate_max_heart_rate(self):
+        max_heart_rate = self.form.get(UserProfileFormKeys.MAX_HEART_RATE)
+        if max_heart_rate:
+            max_heart_rate, invalid_float_error = validate_float(
+                max_heart_rate, self.language)
+            if invalid_float_error:
+                invalid_float_error.validation_field = UserProfileFormKeys.MAX_HEART_RATE
+                self._errors.append(invalid_float_error)
+            elif max_heart_rate < MIN_HEART_RATE or max_heart_rate > MAX_HEART_RATE:
+                error = Error(UserProfileErrorCodes.INVALID_MAX_HEART_RATE, _(
+                    UserProfileErrorCodes.INVALID_MAX_HEART_RATE, self.language), UserProfileFormKeys.MAX_HEART_RATE)
+                self._errors.append(error)
+            else:
+                self.user_profile[UserProfileFormKeys.MAX_HEART_RATE] = max_heart_rate
+        else:
+            error = init_missing_field_error(
+                UserProfileFormKeys.MAX_HEART_RATE, self.language)
+            self._errors.append(error)
+
+    def validate_weight(self):
+        weight = self.form.get(UserProfileFormKeys.WEIGHT)
+        if weight:
+            weight, invalid_float_error = validate_float(weight, self.language)
+            if invalid_float_error:
+                invalid_float_error.validation_field = UserProfileFormKeys.WEIGHT
+                self._errors.append(invalid_float_error)
+            elif weight < MIN_WEIGHT or weight > MAX_WEIGHT:
+                error = Error(UserProfileErrorCodes.INVALID_WEIGHT, _(
+                    UserProfileErrorCodes.INVALID_WEIGHT, self.language), UserProfileFormKeys.WEIGHT)
+                self._errors.append(error)
+            else:
+                self.user_profile[UserProfileFormKeys.WEIGHT] = weight
+        else:
+            error = init_missing_field_error(
+                UserProfileFormKeys.WEIGHT, self.language)
+            self._errors.append(error)
+
+    def validate_height(self):
+        height = self.form.get(UserProfileFormKeys.HEIGHT)
+        if height:
+            height, invalid_float_error = validate_float(height, self.language)
+            if invalid_float_error:
+                invalid_float_error.validation_field = UserProfileFormKeys.HEIGHT
+                self._errors.append(invalid_float_error)
+            elif height < MIN_HEIGHT or height > MAX_HEIGHT:
+                error = Error(UserProfileErrorCodes.INVALID_HEIGHT, _(
+                    UserProfileErrorCodes.INVALID_HEIGHT, self.language), UserProfileFormKeys.HEIGHT)
+                self._errors.append(error)
+            else:
+                self.user_profile[UserProfileFormKeys.HEIGHT] = height
+        else:
+            error = init_missing_field_error(
+                UserProfileFormKeys.HEIGHT, self.language)
+            self._errors.append(error)
+
+    def validate_birth_date(self):
+        birth_date = self.form.get(UserProfileFormKeys.BIRTH_DATE)
+        if birth_date:
+            birth_date, invalid_date_error = validate_date(
+                birth_date, self.language)
+            if invalid_date_error:
+                invalid_date_error.validation_field = UserProfileFormKeys.BIRTH_DATE
+                self._errors.append(invalid_date_error)
+            elif birth_date >= datetime.now():
+                error = Error(CommonErrorCodes.DATE_MUST_BE_IN_PAST, _(
+                    CommonErrorCodes.DATE_MUST_BE_IN_PAST, self.language), UserProfileFormKeys.BIRTH_DATE)
+                self._errors.append(error)
+            else:
+                self.user_profile[UserProfileFormKeys.BIRTH_DATE] = birth_date
+        else:
+            error = init_missing_field_error(
+                UserProfileFormKeys.BIRTH_DATE, self.language)
+            self._errors.append(error)
 
 
-class UserProfileUpdateFormValidator(UserProfileFormValidator):
+class UpdateUserProfileFormValidator(SaveUserProfileFormValidator):
     def __init__(self, form: dict, language: str):
         super().__init__(form, language)
 
     def validate(self) -> None:
-        for key, _ in self.form.items():
-            if key == UserProfileFormKeys.BIRTH_DATE:
-                self._validate_date_of_birth()
-            elif key == UserProfileFormKeys.WEIGHT:
-                self._validate_weight()
-            elif key == UserProfileFormKeys.HEIGHT:
-                self._validate_height()
-            elif key == UserProfileFormKeys.MAX_HEART_RATE:
-                self._validate_max_heart_rate()
-            elif key == UserProfileFormKeys.GENDER:
-                self._validate_gender()
-            elif key == UserProfileFormKeys.ACTIVITY_LEVEL:
-                self._validate_activity_level()
+        if UserProfileFormKeys.BIRTH_DATE in self.form:
+            self.validate_birth_date()
+        if UserProfileFormKeys.HEIGHT in self.form:
+            self.validate_height()
+        if UserProfileFormKeys.WEIGHT in self.form:
+            self.validate_weight()
+        if UserProfileFormKeys.MAX_HEART_RATE in self.form:
+            self.validate_max_heart_rate()
+        if UserProfileFormKeys.GENDER in self.form:
+            self.validate_gender()
+        if UserProfileFormKeys.ACTIVITY_LEVEL in self.form:
+            self.validate_activity_level()

@@ -4,7 +4,19 @@
         "es": "Usuario no encontrado"
     },
     "USER_PROFILE_NOT_COMPLETED": {
-        "en": "Profile not completed, please try to save a new profile before checking it",
-        "es": "Perfil no completado, por favor intenta guardar un nuevo perfil antes de consultarlo"
+        "en": "Profile not completed, please try saving a new profile before performing this operation",
+        "es": "Perfil no completado, por favor intenta guardar un nuevo perfil antes de ejecutar esta operación"
+    },
+    "INVALID_HEIGHT": {
+        "en": "The height must be a value between {{min_height}} and {{max_height}}",
+        "es": "La altura debe ser un valor entre {{min_height}} y {{max_height}}"
+    },
+    "INVALID_WEIGHT": {
+        "en": "The weight must be a value between {{min_weight}} and {{max_weight}}",
+        "es": "El peso debe ser un valor entre {{min_weight}} y {{max_weight}}"
+    },
+    "INVALID_MAX_HEART_RATE": {
+        "en": "The maximum heart rate must be a value between {{min_max_heart_rate}} and {{max_max_heart_rate}}",
+        "es": "La frecuencia cardíaca máxima debe ser un valor entre {{min_max_heart_rate}} y {{max_max_heart_rate}}"
     }
 }
