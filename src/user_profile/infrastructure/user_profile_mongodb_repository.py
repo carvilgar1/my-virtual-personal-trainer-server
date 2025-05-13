@@ -27,10 +27,14 @@ class UserProfileMongoDBRepository(UserProfileRepository):
                     'gender': user_profile.gender.value,
                     'activityLevel': user_profile.activity_level.value
                 }
-            }
+            },
+            upsert=True
         )
 
     def update(self, user_id: str, user_profile: UserProfile) -> None:
+        if not user_profile:
+            return
+        
         update_data = {}
         if user_profile.birth_date:
             update_data['birthDate'] = user_profile.birth_date

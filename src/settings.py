@@ -13,7 +13,7 @@ from src.user_profile.infrastructure.user_profile_mongodb_repository import \
     UserProfileMongoDBRepository
 
 # ==============================================
-# Enviroment variables
+# Environment variables
 # ==============================================
 load_dotenv()
 

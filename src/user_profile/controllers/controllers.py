@@ -19,7 +19,7 @@ user_blueprint = Blueprint('user', __name__, url_prefix='/user')
 
 @user_blueprint.route('/', methods=['POST'], endpoint='save_user_profile')
 @authorization_required(authentication_service)
-def handele_save_user_profile_request(current_user: UserCredentials):
+def handle_save_user_profile_request(current_user: UserCredentials):
     try:
         language = request.args.get(LANGUAGE_GET_PARAM, DEFAULT_LANGUAGE)
         form = request.json
@@ -64,7 +64,7 @@ def save_user_profile(
 
 @user_blueprint.route('/', methods=['PUT'], endpoint='update_user_profile')
 @authorization_required(authentication_service)
-def handele_update_user_profile_request(current_user: UserCredentials):
+def handle_update_user_profile_request(current_user: UserCredentials):
     try:
         language = request.args.get(LANGUAGE_GET_PARAM, DEFAULT_LANGUAGE)
         form = request.json
@@ -104,7 +104,7 @@ def update_user_profile(
 
 @user_blueprint.route('/', methods=['GET'], endpoint='retrieve_user_profile')
 @authorization_required(authentication_service)
-def handele_retrieve_user_profile_request(current_user: UserCredentials):
+def handle_retrieve_user_profile_request(current_user: UserCredentials):
     try:
         language = request.args.get(LANGUAGE_GET_PARAM, DEFAULT_LANGUAGE)
 
