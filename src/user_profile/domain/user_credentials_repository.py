@@ -11,9 +11,13 @@ class UserProfileRepository(ABC):
         pass
 
     @abstractmethod
-    def update(self, user_id: str, user_profile: dict) -> None:
+    def update(self, user_id: str, user_profile: UserProfile) -> None:
         pass
 
     @abstractmethod
     def find(self, user_id: str) -> Optional[UserProfile]:
+        pass
+
+    @abstractmethod
+    def delete(self, user_id: str) -> None:
         pass

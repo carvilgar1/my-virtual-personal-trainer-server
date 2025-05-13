@@ -15,7 +15,7 @@ app.register_blueprint(user_blueprint)
 def test():
     return jsonify({
         'status': 'Success',
-        'message': 'If uou see this message, the server is running!'
+        'message': 'If you see this message, the server is running!'
     })
 
 

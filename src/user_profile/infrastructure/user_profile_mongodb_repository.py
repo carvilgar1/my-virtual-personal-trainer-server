@@ -1,4 +1,3 @@
-from datetime import date
 from typing import Optional
 
 from bson import ObjectId
@@ -16,20 +15,40 @@ class UserProfileMongoDBRepository(UserProfileRepository):
         self.db = self.client[settings['database']]
         self.collection = self.db['users']
 
-    def save(self, user_id: str, user_profile: dict) -> None:
-        user_profile['_profile_completed'] = True
+    def save(self, user_id: str, user_profile: UserProfile) -> None:
         self.collection.update_one(
             {"_id": ObjectId(user_id)},
             {
-                '$set': user_profile
+                '$set': {
+                    'birthDate': user_profile.birth_date,
+                    'weight': user_profile.weight,
+                    'height': user_profile.height,
+                    'maxHeartRate': user_profile.max_heart_rate,
+                    'gender': user_profile.gender.value,
+                    'activityLevel': user_profile.activity_level.value
+                }
             }
         )
 
-    def update(self, user_id: str, user_profile: dict) -> None:
+    def update(self, user_id: str, user_profile: UserProfile) -> None:
+        update_data = {}
+        if user_profile.birth_date:
+            update_data['birthDate'] = user_profile.birth_date
+        if user_profile.weight:
+            update_data['weight'] = user_profile.weight
+        if user_profile.height:
+            update_data['height'] = user_profile.height
+        if user_profile.max_heart_rate:
+            update_data['maxHeartRate'] = user_profile.max_heart_rate
+        if user_profile.gender:
+            update_data['gender'] = user_profile.gender.value
+        if user_profile.activity_level:
+            update_data['activityLevel'] = user_profile.activity_level.value
+
         self.collection.update_one(
             {"_id": ObjectId(user_id)},
             {
-                '$set': user_profile
+                '$set': update_data
             }
         )
 
@@ -38,20 +57,23 @@ class UserProfileMongoDBRepository(UserProfileRepository):
         if not user_data:
             return None
 
-        profile_completed = user_data.get('_profile_completed', False)
-        birth_date = user_data.get('birthDate', date(1970, 1, 1))
-        weight = user_data.get('weight', 0)
-        height = user_data.get('height', 0)
-        max_heart_rate = user_data.get('maxHeartRate', 0)
-        gender = user_data.get('gender', 0)
-        activity_level = user_data.get('activityLevel', 0)
+        birth_date = user_data.get('birthDate', None)
+        weight = user_data.get('weight', None)
+        height = user_data.get('height', None)
+        max_heart_rate = user_data.get('maxHeartRate', None)
+        gender = user_data.get('gender', None)
+        activity_level = user_data.get('activityLevel', None)
 
-        return UserProfile(
-            profile_completed=profile_completed,
+        user_profile = UserProfile(
             birth_date=birth_date,
             weight=weight,
             height=height,
             max_heart_rate=max_heart_rate,
-            gender=Gender(gender),
-            activity_level=ActivityLevel(activity_level)
+            gender=Gender(gender) if gender is not None else None,
+            activity_level=ActivityLevel(
+                activity_level) if activity_level is not None else None
         )
+        return user_profile
+
+    def delete(self, user_id: str) -> None:
+        self.collection.delete_one({"_id": ObjectId(user_id)})

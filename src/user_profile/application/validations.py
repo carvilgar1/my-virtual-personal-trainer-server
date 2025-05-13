@@ -9,6 +9,7 @@ from src.constants import (MAX_HEART_RATE, MAX_HEIGHT, MAX_WEIGHT,
                            MIN_HEART_RATE, MIN_HEIGHT, MIN_WEIGHT,
                            CommonErrorCodes, UserProfileErrorCodes)
 from src.user_profile.domain.user_profile import (ActivityLevel, Gender,
+                                                  UserProfile,
                                                   UserProfileFormKeys)
 
 
@@ -21,7 +22,7 @@ class SaveUserProfileFormValidator(BaseFormValidator):
         super().__init__(language)
 
         self.form = form
-        self.user_profile = {}
+        self.user_profile = UserProfile()
 
     def validate(self) -> None:
         self.validate_birth_date()
@@ -36,7 +37,7 @@ class SaveUserProfileFormValidator(BaseFormValidator):
         if activity_level:
             try:
                 activity_level = ActivityLevel[activity_level]
-                self.user_profile[UserProfileFormKeys.ACTIVITY_LEVEL] = activity_level.value
+                self.user_profile.activity_level = activity_level
             except KeyError:
                 message = _(CommonErrorCodes.INVALID_VALUE, self.language)
                 if message:
@@ -55,7 +56,7 @@ class SaveUserProfileFormValidator(BaseFormValidator):
         if gender:
             try:
                 gender = Gender[gender]
-                self.user_profile[UserProfileFormKeys.GENDER] = gender.value
+                self.user_profile.gender = gender
             except KeyError:
                 message = _(CommonErrorCodes.INVALID_VALUE, self.language)
                 if message:
@@ -81,7 +82,7 @@ class SaveUserProfileFormValidator(BaseFormValidator):
                     UserProfileErrorCodes.INVALID_MAX_HEART_RATE, self.language), UserProfileFormKeys.MAX_HEART_RATE)
                 self._errors.append(error)
             else:
-                self.user_profile[UserProfileFormKeys.MAX_HEART_RATE] = max_heart_rate
+                self.user_profile.max_heart_rate = max_heart_rate
         else:
             error = init_missing_field_error(
                 UserProfileFormKeys.MAX_HEART_RATE, self.language)
@@ -99,7 +100,7 @@ class SaveUserProfileFormValidator(BaseFormValidator):
                     UserProfileErrorCodes.INVALID_WEIGHT, self.language), UserProfileFormKeys.WEIGHT)
                 self._errors.append(error)
             else:
-                self.user_profile[UserProfileFormKeys.WEIGHT] = weight
+                self.user_profile.weight = weight
         else:
             error = init_missing_field_error(
                 UserProfileFormKeys.WEIGHT, self.language)
@@ -117,7 +118,7 @@ class SaveUserProfileFormValidator(BaseFormValidator):
                     UserProfileErrorCodes.INVALID_HEIGHT, self.language), UserProfileFormKeys.HEIGHT)
                 self._errors.append(error)
             else:
-                self.user_profile[UserProfileFormKeys.HEIGHT] = height
+                self.user_profile.height = height
         else:
             error = init_missing_field_error(
                 UserProfileFormKeys.HEIGHT, self.language)
@@ -136,7 +137,7 @@ class SaveUserProfileFormValidator(BaseFormValidator):
                     CommonErrorCodes.DATE_MUST_BE_IN_PAST, self.language), UserProfileFormKeys.BIRTH_DATE)
                 self._errors.append(error)
             else:
-                self.user_profile[UserProfileFormKeys.BIRTH_DATE] = birth_date
+                self.user_profile.birth_date = birth_date
         else:
             error = init_missing_field_error(
                 UserProfileFormKeys.BIRTH_DATE, self.language)

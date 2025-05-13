@@ -1,11 +1,11 @@
 from enum import Enum
 
-from src.constants import CommonErrorCodes
-
 
 class Status(Enum):
     SUCCESS = 'Success'
     ERROR = 'Error'
+    UPDATED = 'Updated'
+    DELETED = 'Deleted'
 
 
 class Error:

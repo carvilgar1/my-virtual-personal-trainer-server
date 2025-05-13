@@ -4,8 +4,8 @@
         "es": "Usuario no encontrado"
     },
     "USER_PROFILE_NOT_COMPLETED": {
-        "en": "Profile not completed, please try saving a new profile before performing this operation",
-        "es": "Perfil no completado, por favor intenta guardar un nuevo perfil antes de ejecutar esta operación"
+        "en": "Profile not completed, please create a new profile before performing this operation",
+        "es": "Perfil no completado, por favor cree un nuevo perfil antes de realizar esta operación"
     },
     "INVALID_HEIGHT": {
         "en": "The height must be a value between {{min_height}} and {{max_height}}",
