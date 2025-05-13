@@ -124,7 +124,8 @@ class TestUserProfileMongoDBRepository(unittest.TestCase):
                         'gender': user_profile.gender.value,
                         'activityLevel': user_profile.activity_level.value
                     }
-                }
+                }, 
+                upsert=True
             )
         ])
 
