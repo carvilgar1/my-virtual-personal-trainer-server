@@ -11,9 +11,6 @@ class TestUserProfile(unittest.TestCase):
     def test_initialization(self):
         birth_date = datetime(1990, 1, 1)
         user = UserProfile(
-            profile_completed=True,
-            name="Test",
-            surname="User",
             birth_date=birth_date,
             weight=70.0,
             height=175.0,
@@ -21,8 +18,6 @@ class TestUserProfile(unittest.TestCase):
             gender=Gender.MALE,
             activity_level=ActivityLevel.MODERATELY_ACTIVE
         )
-        self.assertEqual(user.name, "Test")
-        self.assertEqual(user.surname, "User")
         self.assertEqual(user.birth_date, birth_date)
         self.assertEqual(user.weight, 70.0)
         self.assertEqual(user.height, 175.0)
@@ -36,15 +31,7 @@ class TestUserProfile(unittest.TestCase):
 
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
-            profile_completed=True,
-            name="",
-            surname="",
-            birth_date=birth_date,
-            weight=0,
-            height=0,
-            max_heart_rate=0,
-            gender=0,
-            activity_level=0
+            birth_date=birth_date
         )
         age = user.get_age()
         self.assertEqual(age, 25)
@@ -55,15 +42,7 @@ class TestUserProfile(unittest.TestCase):
 
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
-            profile_completed=True,
-            name="",
-            surname="",
-            birth_date=birth_date,
-            weight=0,
-            height=0,
-            max_heart_rate=0,
-            gender=0,
-            activity_level=0
+            birth_date=birth_date
         )
         age = user.get_age()
         self.assertEqual(age, 24)
@@ -74,15 +53,7 @@ class TestUserProfile(unittest.TestCase):
 
         birth_date = datetime(2000, 4, 13)
         user = UserProfile(
-            profile_completed=True,
-            name="",
-            surname="",
-            birth_date=birth_date,
-            weight=0,
-            height=0,
-            max_heart_rate=0,
-            gender=0,
-            activity_level=0
+            birth_date=birth_date
         )
         age = user.get_age()
         self.assertEqual(age, 26)
@@ -90,9 +61,6 @@ class TestUserProfile(unittest.TestCase):
     def test_to_json(self):
         birth_date = datetime(1990, 1, 1)
         user = UserProfile(
-            profile_completed=True,
-            name="Test",
-            surname="User",
             birth_date=birth_date,
             weight=70.0,
             height=175.0,
@@ -101,11 +69,9 @@ class TestUserProfile(unittest.TestCase):
             activity_level=ActivityLevel.MODERATELY_ACTIVE
         )
         user_json = user.to_json()
-        self.assertEqual(user_json['name'], "Test")
-        self.assertEqual(user_json['surname'], "User")
-        self.assertEqual(user_json['birth_date'], '1990-01-01')
+        self.assertEqual(user_json['birthDate'], '1990-01-01')
         self.assertEqual(user_json['weight'], 70.0)
         self.assertEqual(user_json['height'], 175.0)
-        self.assertEqual(user_json['max_heart_rate'], 190.0)
+        self.assertEqual(user_json['maxHeartRate'], 190.0)
         self.assertEqual(user_json['gender'], "MALE")
-        self.assertEqual(user_json['activity_level'], "MODERATELY_ACTIVE")
+        self.assertEqual(user_json['activityLevel'], "MODERATELY_ACTIVE")
