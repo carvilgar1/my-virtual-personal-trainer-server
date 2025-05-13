@@ -3,8 +3,8 @@ import unittest
 from datetime import datetime
 from unittest.mock import patch
 
+from src.common.application.error_builders import init_internal_server_error
 from src.common.application.validations import (BaseFormValidator,
-                                                build_unexpected_server_error,
                                                 validate_content_length,
                                                 validate_date,
                                                 validate_datetime,
@@ -101,7 +101,7 @@ class TestValidations(unittest.TestCase):
 
     def test_build_unexpected_server_error(self):
         exception = Exception("Unexpected error")
-        error = build_unexpected_server_error(exception)
+        error = init_internal_server_error(exception)
         self.assertEqual(error.code, CommonErrorCodes.INTERNAL_SERVER_ERROR)
         self.assertEqual(error.message, str(exception))
 

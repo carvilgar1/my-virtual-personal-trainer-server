@@ -1,15 +1,11 @@
 from enum import Enum
 
-from src.constants import CommonErrorCodes
-
 
 class Status(Enum):
     SUCCESS = 'Success'
     ERROR = 'Error'
-
-
-def init_internal_server_error(exception):
-    return Error(CommonErrorCodes.INTERNAL_SERVER_ERROR, str(exception))
+    UPDATED = 'Updated'
+    DELETED = 'Deleted'
 
 
 class Error:

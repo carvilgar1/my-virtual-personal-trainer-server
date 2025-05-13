@@ -38,5 +38,9 @@
     "FIELD_TOO_LARGE": {
         "en": "The content is too long. The maximum allowed limit is {max_allowed_chars} characters",
         "es": "El contenido es demasiado largo. El límite máximo permitido es de {max_allowed_chars} caracteres"
+    },
+    "INVALID_VALUE": {
+        "en": "The value could not be recognized. The expected values ​​are {expected_values}",
+        "es": "El valor no pudo ser reconocido. Los valores esperados son {expected_values}"
     }
 }

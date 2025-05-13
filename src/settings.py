@@ -9,9 +9,11 @@ from src.common.domain import UserCredentialsFormFields
 from src.common.infrastructure.user_credentials_mongodb_repository import \
     UserCredentialsMongoDBRepository
 from src.token_auth.application.authentication import JWTAuthenticationService
+from src.user_profile.infrastructure.user_profile_mongodb_repository import \
+    UserProfileMongoDBRepository
 
 # ==============================================
-# Enviroment variables
+# Environment variables
 # ==============================================
 load_dotenv()
 
@@ -58,6 +60,7 @@ authentication_service = JWTAuthenticationService(
 # Domain repositories
 # ==============================================
 user_credentials_repository = UserCredentialsMongoDBRepository(DB_SETTINGS)
+user_profile_repository = UserProfileMongoDBRepository(DB_SETTINGS)
 
 # ==============================================
 # Localizations configuration
@@ -71,7 +74,13 @@ def init_placeholder_replacements():
         'password': UserCredentialsFormFields.PASSWORD,
         'password_min_length': str(constants.PASSWORD_MIN_LENGTH),
         'username_max_chars': str(constants.MAX_USERNAME_CHARS),
-        'password_allowed_symbols': ''.join(constants.PASSWORD_ALLOWED_SYMBOLS)
+        'password_allowed_symbols': ''.join(constants.PASSWORD_ALLOWED_SYMBOLS),
+        'min_height': str(constants.MIN_HEIGHT),
+        'max_height': str(constants.MAX_HEIGHT),
+        'min_weight': str(constants.MIN_WEIGHT),
+        'max_weight': str(constants.MAX_WEIGHT),
+        'min_heart_rate': str(constants.MIN_HEART_RATE),
+        'max_heart_rate': str(constants.MAX_HEART_RATE),
     }
 
 

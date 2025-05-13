@@ -7,9 +7,8 @@ from flask import Flask
 
 from src.common.domain import Status, UserCredentials
 from src.constants import CommonErrorCodes, TokenErrorCodes
-from src.token_auth.application.authentication import (AuthenticationService,
-                                                  JWTAuthenticationService,
-                                                  authorization_required)
+from src.token_auth.application.authentication import (
+    AuthenticationService, JWTAuthenticationService, authorization_required)
 
 
 class TestAuthorizationRequiredMiddleware(unittest.TestCase):

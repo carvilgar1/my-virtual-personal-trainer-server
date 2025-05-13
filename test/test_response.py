@@ -1,7 +1,7 @@
 import unittest
 
-from src.common.domain.response import (Error, Response, Status,
-                                        init_internal_server_error)
+from src.common.application.error_builders import init_internal_server_error
+from src.common.domain.response import Error, Response, Status
 from src.constants import CommonErrorCodes
 
 

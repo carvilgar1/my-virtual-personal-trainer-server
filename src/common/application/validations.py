@@ -32,10 +32,6 @@ def validate_content_length(field_value: str, lang: str, max_content_length_allo
     return False, error
 
 
-def build_unexpected_server_error(e: Exception):
-    return Error(CommonErrorCodes.INTERNAL_SERVER_ERROR, str(e))
-
-
 def validate_email_format(email: str) -> bool:
     return __email_regex.match(email)
 
