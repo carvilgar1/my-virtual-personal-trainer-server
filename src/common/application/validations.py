@@ -12,8 +12,12 @@ __email_regex = re.compile(EMAIL_PATTERN)
 
 
 def validate_mandatory_field(field_value: str | Any, field_key: str, language: str) -> tuple[bool, Error]:
-    if field_value and field_value.strip():
-        return True, None
+    if field_value:
+        if isinstance(field_value, str):
+            if field_value.strip():
+                return True, None
+        else:
+            return True, None
     message = _(CommonErrorCodes.MISSING_MANDATORY_FIELD, language)
     if message:
         message = message.format(field_key=field_key)

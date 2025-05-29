@@ -6,6 +6,7 @@ class Status(Enum):
     ERROR = 'Error'
     UPDATED = 'Updated'
     DELETED = 'Deleted'
+    WARNING = 'Warning'
 
 
 class Error:

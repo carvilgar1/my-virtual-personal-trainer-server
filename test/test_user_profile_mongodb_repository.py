@@ -45,7 +45,7 @@ class TestUserProfileMongoDBRepository(unittest.TestCase):
                 }
             }
         )
-        
+
     @patch('src.user_profile.infrastructure.user_profile_mongodb_repository.MongoClient')
     def test_full_update(self, mock_mongo_client):
         # Arrange
@@ -76,12 +76,12 @@ class TestUserProfileMongoDBRepository(unittest.TestCase):
             {'_id': ObjectId(user_id)},
             {
                 '$set': {
-                        'birthDate': user_profile.birth_date,
-                        'weight': user_profile.weight,
-                        'height': user_profile.height,
-                        'maxHeartRate': user_profile.max_heart_rate,
-                        'gender': user_profile.gender.value,
-                        'activityLevel': user_profile.activity_level.value
+                    'birthDate': user_profile.birth_date,
+                    'weight': user_profile.weight,
+                    'height': user_profile.height,
+                    'maxHeartRate': user_profile.max_heart_rate,
+                    'gender': user_profile.gender.value,
+                    'activityLevel': user_profile.activity_level.value
                 }
             }
         )
@@ -124,7 +124,7 @@ class TestUserProfileMongoDBRepository(unittest.TestCase):
                         'gender': user_profile.gender.value,
                         'activityLevel': user_profile.activity_level.value
                     }
-                }, 
+                },
                 upsert=True
             )
         ])

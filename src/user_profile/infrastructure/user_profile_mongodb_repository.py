@@ -34,7 +34,7 @@ class UserProfileMongoDBRepository(UserProfileRepository):
     def update(self, user_id: str, user_profile: UserProfile) -> None:
         if not user_profile:
             return
-        
+
         update_data = {}
         if user_profile.birth_date:
             update_data['birthDate'] = user_profile.birth_date

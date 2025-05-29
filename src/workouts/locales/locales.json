@@ -1,0 +1,22 @@
+{
+    "INVALID_DURATION": {
+        "en": "Invalid duration, must be a positive number",
+        "es": "Duración inválida, debe ser un número positivo"
+    },
+    "WORKOUT_HAS_ERRORS": {
+        "en": "Workout has errors, please fix them before saving",
+        "es": "El entrenamiento tiene errores, por favor corríjalos antes de guardar"
+    },
+    "SAVING_ERROR": {
+        "en": "Some workouts could not be saved due to validation errors. Please review the details below",
+        "es": "Algunos entrenamientos no se pudieron guardar debido a errores de validación. Por favor, revise los detalles a continuación"
+    },
+    "FATAL_SAVING_ERROR": {
+        "en": "No workouts could be saved due to validation errors. Please review the details below",
+        "es": "Ninguno entrenamiento pudo ser guardado debido a errores de validación. Por favor, revise los detalles a continuación"
+    },
+    "DATES_RANGE_EXCEEDED": {
+        "en": "The dates range exceeds the maximum allowed limit of 1 year",
+        "es": "El rango de fechas excede el límite máximo permitido de 1 año"
+    }
+}
