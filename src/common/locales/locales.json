@@ -42,5 +42,9 @@
     "INVALID_VALUE": {
         "en": "The value could not be recognized. The expected values ​​are {expected_values}",
         "es": "El valor no pudo ser reconocido. Los valores esperados son {expected_values}"
+    },
+    "BAD_REQUEST": {
+        "en": "Bad request",
+        "es": "Solicitud incorrecta"
     }
 }

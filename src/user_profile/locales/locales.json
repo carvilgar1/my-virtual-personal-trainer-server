@@ -15,8 +15,8 @@
         "en": "The weight must be a value between {{min_weight}} and {{max_weight}}",
         "es": "El peso debe ser un valor entre {{min_weight}} y {{max_weight}}"
     },
-    "INVALID_MAX_HEART_RATE": {
-        "en": "The maximum heart rate must be a value between {{min_max_heart_rate}} and {{max_max_heart_rate}}",
-        "es": "La frecuencia cardíaca máxima debe ser un valor entre {{min_max_heart_rate}} y {{max_max_heart_rate}}"
+    "INVALID_HEART_RATE": {
+        "en": "The heart rate must be a value between {{min_heart_rate}} and {{max_heart_rate}}",
+        "es": "La frecuencia cardíaca debe ser un valor entre {{min_heart_rate}} y {{max_heart_rate}}"
     }
 }

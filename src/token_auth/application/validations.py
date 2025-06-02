@@ -1,11 +1,9 @@
 from src.common.application.localizations import localize as _
 from src.common.application.user_credentials_validations import (
     validate_email, validate_password, validate_username)
-from src.common.application.validations import (BaseFormValidator,
-                                                validate_email_format,
-                                                validate_mandatory_field)
+from src.common.application.validations import BaseFormValidator
 from src.common.domain import Error, UserCredentials, UserCredentialsFormFields
-from src.constants import CommonErrorCodes, TokenErrorCodes
+from src.constants import TokenErrorCodes
 
 
 def validate_bearer_token(token: str, lang: str) -> tuple[str, Error]:

@@ -11,6 +11,8 @@ from src.common.infrastructure.user_credentials_mongodb_repository import \
 from src.token_auth.application.authentication import JWTAuthenticationService
 from src.user_profile.infrastructure.user_profile_mongodb_repository import \
     UserProfileMongoDBRepository
+from src.workouts.infrastructure.workouts_mongodb_repository import \
+    WorkoutsMongoDBRepository
 
 # ==============================================
 # Environment variables
@@ -61,6 +63,7 @@ authentication_service = JWTAuthenticationService(
 # ==============================================
 user_credentials_repository = UserCredentialsMongoDBRepository(DB_SETTINGS)
 user_profile_repository = UserProfileMongoDBRepository(DB_SETTINGS)
+workouts_repository = WorkoutsMongoDBRepository(DB_SETTINGS)
 
 # ==============================================
 # Localizations configuration
