@@ -20,8 +20,8 @@ def validate_workout(workout: Workout, language: str) -> Warning | None:
         errors.append(error)
 
     if workout.average_heart_rate < 1 or workout.average_heart_rate > MAX_HEART_RATE:
-        error = Error(UserProfileErrorCodes.INVALID_MAX_HEART_RATE, _(
-            UserProfileErrorCodes.INVALID_MAX_HEART_RATE, language))
+        error = Error(UserProfileErrorCodes.INVALID_HEART_RATE, _(
+            UserProfileErrorCodes.INVALID_HEART_RATE, language))
         errors.append(error)
 
     if errors:

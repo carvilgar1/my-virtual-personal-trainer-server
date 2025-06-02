@@ -78,8 +78,8 @@ class SaveUserProfileFormValidator(BaseFormValidator):
                 invalid_float_error.validation_field = UserProfileFormKeys.MAX_HEART_RATE
                 self._errors.append(invalid_float_error)
             elif max_heart_rate < MIN_HEART_RATE or max_heart_rate > MAX_HEART_RATE:
-                error = Error(UserProfileErrorCodes.INVALID_MAX_HEART_RATE, _(
-                    UserProfileErrorCodes.INVALID_MAX_HEART_RATE, self.language), UserProfileFormKeys.MAX_HEART_RATE)
+                error = Error(UserProfileErrorCodes.INVALID_HEART_RATE, _(
+                    UserProfileErrorCodes.INVALID_HEART_RATE, self.language), UserProfileFormKeys.MAX_HEART_RATE)
                 self._errors.append(error)
             else:
                 self.user_profile.max_heart_rate = max_heart_rate
