@@ -42,7 +42,7 @@ class TestValidateWorkout(unittest.TestCase):
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
         self.assertTrue(
-            any(error.code == "INVALID_MAX_HEART_RATE" for error in result.errors))
+            any(error.code == "INVALID_HEART_RATE" for error in result.errors))
 
     @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
     @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
@@ -54,7 +54,7 @@ class TestValidateWorkout(unittest.TestCase):
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
         self.assertTrue(
-            any(error.code == "INVALID_MAX_HEART_RATE" for error in result.errors))
+            any(error.code == "INVALID_HEART_RATE" for error in result.errors))
 
     @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
     @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
@@ -67,7 +67,7 @@ class TestValidateWorkout(unittest.TestCase):
         self.assertIsNotNone(result)
         codes = [error.code for error in result.errors]
         self.assertIn("INVALID_DURATION", codes)
-        self.assertIn("INVALID_MAX_HEART_RATE", codes)
+        self.assertIn("INVALID_HEART_RATE", codes)
 
 
 class TestParseWorkout(unittest.TestCase):
