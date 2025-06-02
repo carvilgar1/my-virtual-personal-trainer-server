@@ -8,7 +8,7 @@ from src.workouts.domain.workouts import Workout
 
 class WorkoutsRepository(ABC):
     @abstractmethod
-    def save_many(self, workouts: list[Workout]) -> None:
+    def save_many(self, user_id: str, workouts: list[Workout]) -> None:
         pass
 
     @abstractmethod
