@@ -67,7 +67,7 @@ def handle_get_workouts_request(current_user: UserCredentials):
 
         if date_from and date_to:
             response, status_code = retrieve_workouts_by_dates(
-                current_user, date_from, date_to, language
+                current_user, workouts_repository, date_from, date_to, language
             )
             return jsonify(response.to_json()), status_code
 
@@ -169,6 +169,13 @@ def retrieve_workouts_by_dates(
         errors.append(date_to_errors)
 
     if errors:
+        response = build_bad_request_response(lang, errors)
+        return response, 400
+
+    if date_from > date_to:
+        error = Error(WorkoutsErrorCodes.INVALID_DATE_RANGE, _(
+            WorkoutsErrorCodes.INVALID_DATE_RANGE, lang), validation_field='dateFrom')
+        errors.append(error)
         response = build_bad_request_response(lang, errors)
         return response, 400
 

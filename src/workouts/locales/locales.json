@@ -18,5 +18,9 @@
     "DATES_RANGE_EXCEEDED": {
         "en": "The dates range exceeds the maximum allowed limit of 1 year",
         "es": "El rango de fechas excede el límite máximo permitido de 1 año"
+    },
+    "INVALID_DATE_RANGE": {
+        "en": "Invalid date range, start date must be before end date",
+        "es": "Rango de fechas inválido, la fecha de inicio debe ser anterior a la fecha de finalización"
     }
 }
