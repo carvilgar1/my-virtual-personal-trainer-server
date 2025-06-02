@@ -1,10 +1,14 @@
 import unittest
 from unittest.mock import Mock, patch
-from src.workouts.application.validations import validate_workout, parse_workout, parse_workout_start_time, parse_workout_duration, parse_workout_average_heart_rate
+
+from src.workouts.application.validations import (
+    parse_workout, parse_workout_average_heart_rate, parse_workout_duration,
+    parse_workout_start_time, validate_workout)
 
 DUMMY_LANGUAGE = "en"
 DUMMY_WORKOUT_JSON = {"dummy": "data"}
 MAX_HEART_RATE = 220
+
 
 class TestValidateWorkout(unittest.TestCase):
     @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
@@ -25,7 +29,8 @@ class TestValidateWorkout(unittest.TestCase):
         workout.to_json.return_value = DUMMY_WORKOUT_JSON
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
-        self.assertTrue(any(error.code == "INVALID_DURATION" for error in result.errors))
+        self.assertTrue(
+            any(error.code == "INVALID_DURATION" for error in result.errors))
 
     @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
     @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
@@ -36,7 +41,8 @@ class TestValidateWorkout(unittest.TestCase):
         workout.to_json.return_value = DUMMY_WORKOUT_JSON
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
-        self.assertTrue(any(error.code == "INVALID_MAX_HEART_RATE" for error in result.errors))
+        self.assertTrue(
+            any(error.code == "INVALID_MAX_HEART_RATE" for error in result.errors))
 
     @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
     @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
@@ -47,7 +53,8 @@ class TestValidateWorkout(unittest.TestCase):
         workout.to_json.return_value = DUMMY_WORKOUT_JSON
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
-        self.assertTrue(any(error.code == "INVALID_MAX_HEART_RATE" for error in result.errors))
+        self.assertTrue(
+            any(error.code == "INVALID_MAX_HEART_RATE" for error in result.errors))
 
     @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
     @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
@@ -61,6 +68,7 @@ class TestValidateWorkout(unittest.TestCase):
         codes = [error.code for error in result.errors]
         self.assertIn("INVALID_DURATION", codes)
         self.assertIn("INVALID_MAX_HEART_RATE", codes)
+
 
 class TestParseWorkout(unittest.TestCase):
     @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
@@ -107,6 +115,7 @@ class TestParseWorkout(unittest.TestCase):
         self.assertIn("INVALID_DATETIME", codes)
         self.assertIn("INVALID_INTEGER", codes)
         self.assertIn("INVALID_FLOAT", codes)
+
 
 if __name__ == "__main__":
     unittest.main()
