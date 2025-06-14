@@ -58,7 +58,7 @@ def check_fallback_lang_exists(json_locales, file_path):
                 locale_key, fallback_language, file_path)
 
 
-def localize(locale_key: str, language: str) -> str:
+def localize(locale_key: str, language: str) -> str | None:
     if locale_key not in locales:
         logging.warning(
             f'No locales were found for {locale_key}. Please, review */locales/locales.json')
