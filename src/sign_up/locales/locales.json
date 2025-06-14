@@ -3,6 +3,10 @@
         "en": "The '{{username}}' is too long. Must not exceed {{username_max_chars}} characters",
         "es": "El '{{username}}' es demasiado largo. No debe exceder {{username_max_chars}} caracteres"
     },
+    "INVALID_USERNAME": {
+        "en": "The '{{username}}' can only contain letters, both uppercase and lowercase, and numbers, and cannot contain spaces or special characters",
+        "es": "El '{{username}}' solo puede contener letras, mayúsculas, minúsculas y numeros, y no puede contener espacios ni caracteres especiales"
+    },
     "EMAIL_ALREADY_EXISTS": {
         "en": "The '{{email}}' address you provided is already registered",
         "es": "La '{{email}}' electrónico que proporcionó ya está registrada"

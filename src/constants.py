@@ -23,7 +23,7 @@ PASSWORD_ALLOWED_SYMBOLS = [
     '`', '{', '|', '}', '~', '\\', '"', '*'
 ]
 
-EMAIL_PATTERN = r'[^@\s]+@[^@]+\.[^@]+'
+EMAIL_PATTERN = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 DATE_FORMAT = '%Y-%m-%d'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f%z'
 
@@ -58,6 +58,7 @@ class SignUpErrorCodes:
     USERNAME_ALREADY_EXISTS = 'USERNAME_ALREADY_EXISTS'
     PASSWORD_TOO_SHORT = 'PASSWORD_TOO_SHORT'
     USERNAME_TOO_LONG = 'USERNAME_TOO_LONG'
+    INVALID_USERNAME = 'INVALID_USERNAME'
 
 
 class TokenErrorCodes:

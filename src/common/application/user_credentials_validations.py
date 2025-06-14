@@ -1,3 +1,4 @@
+import re
 from src.common.application.localizations import localize as _
 from src.common.application.validations import (validate_content_length,
                                                 validate_email_format,
@@ -90,6 +91,12 @@ def validate_username(username: str, lang: str, errors: list[Error]) -> bool:
         username, lang, MAX_USERNAME_CHARS)
     if not valid_length:
         error.validation_field = UserCredentialsFormFields.USERNAME
+        errors.append(error)
+        return False
+
+    if not re.match(r'^[a-zA-Z0-9]+$', username):
+        error = Error(SignUpErrorCodes.INVALID_USERNAME, _(
+            SignUpErrorCodes.INVALID_USERNAME, lang), UserCredentialsFormFields.USERNAME)
         errors.append(error)
         return False
 
