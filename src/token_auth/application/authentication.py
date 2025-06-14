@@ -14,9 +14,6 @@ from src.token_auth.domain import JwtTokenResponse
 
 
 class AuthenticationService(ABC):
-    def __init__(self):
-        pass
-
     @abstractmethod
     def grant_access(self, credentials: UserCredentials) -> Optional[Any]:
         pass
