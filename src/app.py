@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_wtf import CSRFProtect
 
 from src.sign_up.controllers.controllers import sign_up_blueprint
 from src.token_auth.controllers.controllers import token_blueprint
@@ -6,6 +7,8 @@ from src.user_profile.controllers.controllers import user_blueprint
 from src.workouts.controllers.controllers import workouts_blueprint
 
 app = Flask(__name__)
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 app.register_blueprint(sign_up_blueprint)
 app.register_blueprint(token_blueprint)
@@ -22,4 +25,4 @@ def test():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
