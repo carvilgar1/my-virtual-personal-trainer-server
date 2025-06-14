@@ -1,5 +1,7 @@
 FROM python:3.12.8-bullseye
 
+RUN useradd -m mvptUser
+
 ARG HTTP_PORT
 
 ENV PYTHONPATH=/server
@@ -14,5 +16,7 @@ RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install -r requirements.txt
 
 EXPOSE ${HTTP_PORT}
+
+USER mvptUser
 
 CMD ["flask", "run", "--host=0.0.0.0"]
