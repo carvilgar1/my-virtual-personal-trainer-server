@@ -12,7 +12,7 @@ def validate_bearer_token(token: str, lang: str) -> tuple[str, Error]:
                       _(TokenErrorCodes.INVALID_AUTHORIZATION_HEADER, lang))
         return None, error
 
-    if not 'Bearer ' in token:
+    if 'Bearer ' not in token:
         error = Error(TokenErrorCodes.INVALID_AUTHORIZATION_TYPE,
                       _(TokenErrorCodes.INVALID_AUTHORIZATION_TYPE, lang))
         return None, error
