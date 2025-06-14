@@ -2,6 +2,6 @@ FROM mongo:5.0.31-focal
 
 ARG DB_PORT
 
-#COPY init-db.js /docker-entrypoint-initdb.d/
+COPY init-db.js /docker-entrypoint-initdb.d/
 
 EXPOSE ${DB_PORT}
