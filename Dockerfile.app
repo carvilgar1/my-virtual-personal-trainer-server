@@ -14,8 +14,8 @@ WORKDIR /server
 COPY requirements.txt /server
 COPY src/ /server/src
 
-RUN python3 -m pip install --upgrade pip
-RUN python3 -m pip install -r requirements.txt
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install -r requirements.txt
 
 EXPOSE ${HTTP_PORT}
 
