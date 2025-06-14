@@ -1,4 +1,5 @@
 import re
+
 from src.common.application.localizations import localize as _
 from src.common.application.validations import (validate_content_length,
                                                 validate_email_format,

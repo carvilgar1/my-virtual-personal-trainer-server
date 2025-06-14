@@ -29,7 +29,7 @@ def build_workout_response_with_errors(errors: Error, warnings: list[Warning] | 
     return WorkoutResponse(Status.ERROR, warnings=warnings,  errors=errors)
 
 
-def build_bad_request_response(lang: str, errors: list[Error]) -> Response:
+def build_bad_request_response(lang: str, errors: list[Error] | None) -> Response:
     error = Error(CommonErrorCodes.BAD_REQUEST, _(
         CommonErrorCodes.BAD_REQUEST, lang), errors=errors)
     response = Response(Status.ERROR, error=error)
