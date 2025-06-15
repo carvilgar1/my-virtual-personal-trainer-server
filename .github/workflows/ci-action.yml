@@ -46,11 +46,6 @@ jobs:
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v2
-      with:
-        args: >
-          -Dsonar.projectKey=carvilgar1_my-virtual-personal-trainer-server
-          -Dsonar.organization=carvilgar1
-          -Dsonar.python.coverage.reportPaths=coverage.xml
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
