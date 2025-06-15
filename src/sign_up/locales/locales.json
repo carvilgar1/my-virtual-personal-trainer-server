@@ -1,0 +1,42 @@
+{
+    "USERNAME_TOO_LONG": {
+        "en": "The '{{username}}' is too long. Must not exceed {{username_max_chars}} characters",
+        "es": "El '{{username}}' es demasiado largo. No debe exceder {{username_max_chars}} caracteres"
+    },
+    "INVALID_USERNAME": {
+        "en": "The '{{username}}' can only contain letters, both uppercase and lowercase, and numbers, and cannot contain spaces or special characters",
+        "es": "El '{{username}}' solo puede contener letras, mayúsculas, minúsculas y numeros, y no puede contener espacios ni caracteres especiales"
+    },
+    "EMAIL_ALREADY_EXISTS": {
+        "en": "The '{{email}}' address you provided is already registered",
+        "es": "La '{{email}}' electrónico que proporcionó ya está registrada"
+    },
+    "PASSWORD_MISSING_DIGIT": {
+        "en": "'{{password}}' must contain at least one digit",
+        "es": "'{{password}}' debe contener al menos un dígito"
+    },
+    "PASSWORD_MISSING_LOWERCASE": {
+        "en": "'{{password}}' must contain at least one lowercase letter",
+        "es": "'{{password}}' debe contener al menos una letra minúscula"
+    },
+    "PASSWORD_MISSING_SPECIAL_CHAR": {
+        "en": "'{{password}}' must contain at least one special character, such as {{password_allowed_symbols}}",
+        "es": "'{{password}}' debe contener al menos un carácter especial, como {{password_allowed_symbols}}"
+    },
+    "PASSWORD_MISSING_UPPERCASE": {
+        "en": "'{{password}}' must contain at least one uppercase letter",
+        "es": "'{{password}}' debe contener al menos una letra mayúscula"
+    },
+    "USER_ALREADY_REGISTERED": {
+        "en": "This user is already registered",
+        "es": "Este usuario ya está registrado"
+    },
+    "USERNAME_ALREADY_EXISTS": {
+        "en": "The '{{username}}' you provided is already taken",
+        "es": "El '{{username}}' que proporcionó ya está en uso"
+    },
+    "PASSWORD_TOO_SHORT": {
+        "en": "'{{password}}' must be at least {{password_min_length}} characters long",
+        "es": "'{{password}}' debe tener al menos {{password_min_length}} caracteres"
+    }
+}

@@ -1,0 +1,10 @@
+Flask==3.1.0
+Authlib==1.4.1
+pymongo==4.11
+PyJWT==2.10.1
+bcrypt==4.2.1
+Flask-WTF==1.2.2
+mongomock
+python-dotenv
+coverage
+coverage-badge
