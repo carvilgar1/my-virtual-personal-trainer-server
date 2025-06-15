@@ -168,6 +168,3 @@ cython_debug/
 
 # MongoDB init script
 init-db.js
-
-# Local configuration files
-sonar-project.properties
