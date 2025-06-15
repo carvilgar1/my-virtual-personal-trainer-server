@@ -1,8 +1,9 @@
-![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=alert_status)
-![Coverage](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=coverage)
-![Bugs](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=bugs)
-![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=code_smells)
-![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=vulnerabilities)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=alert_status)](https://sonarcloud.io/summary/overall?id=carvilgar1_my-virtual-personal-trainer-server)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=coverage)](https://sonarcloud.io/summary/overall?id=carvilgar1_my-virtual-personal-trainer-server)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=code_smells)](https://sonarcloud.io/summary/overall?id=carvilgar1_my-virtual-personal-trainer-server)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=bugs)](https://sonarcloud.io/summary/overall?id=carvilgar1_my-virtual-personal-trainer-server)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=security_rating)](https://sonarcloud.io/summary/overall?id=carvilgar1_my-virtual-personal-trainer-server)
+
 
 # 🏋️ AI-Powered Fitness App
 
