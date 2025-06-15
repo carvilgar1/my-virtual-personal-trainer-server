@@ -1,10 +1,12 @@
 name: Build and testing
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
-      - dev
 
 jobs:
   test:
@@ -48,9 +50,3 @@ jobs:
       uses: SonarSource/sonarcloud-github-action@v2
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-html-report
-        path: coverage.xml

@@ -1,3 +1,4 @@
+![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=carvilgar1_my-virtual-personal-trainer-server&metric=alert_status)
 # 🏋️ AI-Powered Fitness App
 
 
