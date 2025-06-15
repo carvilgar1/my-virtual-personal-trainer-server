@@ -48,7 +48,7 @@ jobs:
       uses: SonarSource/sonarcloud-github-action@v2
       with:
         args: >
-          -Dsonar.projectKey=my-virtual-personal-trainer-server
+          -Dsonar.projectKey=carvilgar1_my-virtual-personal-trainer-server
           -Dsonar.organization=carvilgar1
           -Dsonar.python.coverage.reportPaths=coverage.xml
       env:
