@@ -101,7 +101,7 @@ def train_for_user(
     if len(workouts) < lookback + 1:
         error = Error(WorkoutsRecommendationErrorCodes.INSUFFICIENT_WORKOUTS, _(
             WorkoutsRecommendationErrorCodes.INSUFFICIENT_WORKOUTS, language))
-        response = ModelTrainingResponse(status=Status.ERROR, errors=error)
+        response = ModelTrainingResponse(status=Status.ERROR, error=error)
         return response, 400
 
     (train_gen, test_gen,
@@ -161,7 +161,7 @@ def predict_next_for_user(
     if len(recent_workouts) < lookback:
         error = Error(WorkoutsRecommendationErrorCodes.INSUFFICIENT_WORKOUTS, _(
             WorkoutsRecommendationErrorCodes.INSUFFICIENT_WORKOUTS, language))
-        response = PredictionResponse(status=Status.ERROR, errors=error)
+        response = PredictionResponse(status=Status.ERROR, error=error)
         return response, 400
 
     model_path = _MODEL_DIR / f"{user_id}.keras"
