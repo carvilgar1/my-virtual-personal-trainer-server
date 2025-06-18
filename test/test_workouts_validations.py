@@ -1,112 +1,118 @@
+from datetime import datetime
 import unittest
 from unittest.mock import Mock, patch
 
 from src.workouts.application.validations import (
-    parse_workout, parse_workout_average_heart_rate, parse_workout_duration,
-    parse_workout_start_time, validate_workout)
+    parse_workout, validate_workout)
+from src.workouts.domain.workouts import Workout, Mood
 
 DUMMY_LANGUAGE = "en"
-DUMMY_WORKOUT_JSON = {"dummy": "data"}
-MAX_HEART_RATE = 220
+DUMMY_WORKOUT_JSON = {
+    "startTime": "2025-07-09T14:48:00.000000+0000",
+    "duration": 20,
+    "intensity": 3,
+    "mood": "NEUTRAL",
+    "sleepScore": 80
+}
 
 
 class TestValidateWorkout(unittest.TestCase):
-    @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
-    @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
-    def test_valid_workout(self, mock_localize):
-        workout = Mock()
-        workout.duration = 30
-        workout.average_heart_rate = 120
-        workout.to_json.return_value = DUMMY_WORKOUT_JSON
+    
+    def test_valid_workout(self):
+        workout = Workout(
+            start="2025-07-09T14:48:00.000000+0000",
+            duration=20,
+            intensity=3,
+            mood=Mood.NEUTRAL,
+            sleep_score=80
+        )
         self.assertIsNone(validate_workout(workout, DUMMY_LANGUAGE))
 
-    @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
-    @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
-    def test_invalid_duration(self, mock_localize):
-        workout = Mock()
-        workout.duration = 0
-        workout.average_heart_rate = 120
-        workout.to_json.return_value = DUMMY_WORKOUT_JSON
+    
+    def test_invalid_duration(self):
+        workout = Workout(
+            start=datetime.strptime("2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
+            duration=0,
+            intensity=3,
+            mood=Mood.NEUTRAL,
+            sleep_score=80
+        )
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
         self.assertTrue(
             any(error.code == "INVALID_DURATION" for error in result.errors))
 
-    @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
-    @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
-    def test_invalid_heart_rate_low(self, mock_localize):
-        workout = Mock()
-        workout.duration = 30
-        workout.average_heart_rate = 0
-        workout.to_json.return_value = DUMMY_WORKOUT_JSON
+    
+    def test_invalid_intensity(self):
+        workout = Workout(
+            start=datetime.strptime("2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
+            duration=20,
+            intensity=6,  # Invalid intensity
+            mood=Mood.NEUTRAL,
+            sleep_score=80
+        )
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
         self.assertTrue(
-            any(error.code == "INVALID_HEART_RATE" for error in result.errors))
+            any(error.code == "INVALID_INTENSITY" for error in result.errors))
 
-    @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
-    @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
-    def test_invalid_heart_rate_high(self, mock_localize):
-        workout = Mock()
-        workout.duration = 30
-        workout.average_heart_rate = MAX_HEART_RATE + 1
-        workout.to_json.return_value = DUMMY_WORKOUT_JSON
+    
+    def test_invalid_sleep_score(self):
+        workout = Workout(
+            start=datetime.strptime("2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
+            duration=20,
+            intensity=3,
+            mood=Mood.NEUTRAL,
+            sleep_score=101  # Invalid sleep score
+        )
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
         self.assertTrue(
-            any(error.code == "INVALID_HEART_RATE" for error in result.errors))
+            any(error.code == "INVALID_SLEEP_SCORE" for error in result.errors))
 
-    @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
-    @patch("src.workouts.application.validations.MAX_HEART_RATE", MAX_HEART_RATE)
-    def test_multiple_errors(self, mock_localize):
-        workout = Mock()
-        workout.duration = 0
-        workout.average_heart_rate = 0
-        workout.to_json.return_value = DUMMY_WORKOUT_JSON
+    
+    def test_multiple_errors(self):
+        workout = Workout(
+            start=datetime.strptime("2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
+            duration=0,
+            intensity=6,  # Invalid intensity
+            mood=Mood.NEUTRAL,
+            sleep_score=101  # Invalid sleep score
+        )
         result = validate_workout(workout, DUMMY_LANGUAGE)
         self.assertIsNotNone(result)
         codes = [error.code for error in result.errors]
         self.assertIn("INVALID_DURATION", codes)
-        self.assertIn("INVALID_HEART_RATE", codes)
+        self.assertIn("INVALID_INTENSITY", codes)
+        self.assertIn("INVALID_SLEEP_SCORE", codes)
 
 
 class TestParseWorkout(unittest.TestCase):
-    @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
-    @patch("src.workouts.application.validations.validate_mandatory_field", return_value=(None, None))
-    @patch("src.workouts.application.validations.validate_datetime", return_value=("2024-01-01T10:00:00", None))
-    @patch("src.workouts.application.validations.validate_integer", return_value=(30, None))
-    @patch("src.workouts.application.validations.validate_float", return_value=(120.0, None))
-    def test_parse_workout_valid(self, mock_float, mock_int, mock_datetime, mock_mandatory, mock_localize):
-        workout_json = {
-            "start": "2024-01-01T10:00:00",
-            "duration": "30",
-            "average_heart_rate": "120"
-        }
+    
+    def test_parse_workout_valid(self):
+        workout_json = DUMMY_WORKOUT_JSON
         workout, warning = parse_workout(workout_json, DUMMY_LANGUAGE)
         self.assertIsNotNone(workout)
         self.assertIsNone(warning)
-        self.assertEqual(workout.duration, 30)
-        self.assertEqual(workout.average_heart_rate, 120.0)
+        self.assertEqual(workout.duration, 20)
+        self.assertEqual(workout.intensity, 3)
+        self.assertEqual(workout.mood, Mood.NEUTRAL)
+        self.assertEqual(workout.sleep_score, 80)
 
-    @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
-    @patch("src.workouts.application.validations.validate_mandatory_field", return_value=(None, Mock(code="MANDATORY_FIELD_MISSING")))
-    def test_parse_workout_missing_fields(self, mock_mandatory, mock_localize):
+    def test_parse_workout_missing_fields(self):
         workout_json = {}
         workout, warning = parse_workout(workout_json, DUMMY_LANGUAGE)
         self.assertIsNone(workout)
         self.assertIsNotNone(warning)
-        self.assertTrue(len(warning.errors) > 0)
+        self.assertGreater(len(warning.errors), 0)
 
-    @patch("src.workouts.application.validations._", side_effect=lambda key, lang: f"localized-{key}")
-    @patch("src.workouts.application.validations.validate_mandatory_field", return_value=(None, None))
-    @patch("src.workouts.application.validations.validate_datetime", return_value=(None, Mock(code="INVALID_DATETIME")))
-    @patch("src.workouts.application.validations.validate_integer", return_value=(None, Mock(code="INVALID_INTEGER")))
-    @patch("src.workouts.application.validations.validate_float", return_value=(None, Mock(code="INVALID_FLOAT")))
-    def test_parse_workout_invalid_types(self, mock_float, mock_int, mock_datetime, mock_mandatory, mock_localize):
+    def test_parse_workout_invalid_types(self):
         workout_json = {
-            "start": "bad-date",
+            "startTime": "bad-date",
             "duration": "bad-int",
-            "average_heart_rate": "bad-float"
+            "intensity": "bad-intensity",
+            "mood": "INVALID_MOOD",
+            "sleepScore": "bad-sleep-score"
         }
         workout, warning = parse_workout(workout_json, DUMMY_LANGUAGE)
         self.assertIsNone(workout)
@@ -114,7 +120,8 @@ class TestParseWorkout(unittest.TestCase):
         codes = [error.code for error in warning.errors]
         self.assertIn("INVALID_DATETIME", codes)
         self.assertIn("INVALID_INTEGER", codes)
-        self.assertIn("INVALID_FLOAT", codes)
+        self.assertIn("INVALID_VALUE", codes)
+        self.assertIn("INVALID_INTEGER", codes)
 
 
 if __name__ == "__main__":

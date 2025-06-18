@@ -45,11 +45,14 @@ class TestIntegrationWorkoutsController(unittest.TestCase):
             mock_auth_service.authenticate.return_value = mock_user
             mock_repo.save_many.return_value = None
 
-            data = [{
-                "startTime": "2025-07-08T15:48:00.00000Z",
-                "duration": "30",
-                "averageHeartRate": "120"
-            }]
+            data = [
+                {
+                    "duration": 20,
+                    "intensity": 3,
+                    "sleepScore": 80,
+                    "startTime": "2025-07-09T14:48:00.00000Z"
+                }
+            ]
 
             headers = self.auth_header
             response = self.client.post(
@@ -66,8 +69,12 @@ class TestIntegrationWorkoutsController(unittest.TestCase):
     def test_save_workouts_partial_success(self, mock_repo):
         mock_repo.save_many.return_value = None
         data = [
-            {"startTime": "2025-07-08T15:48:00.00000Z", "duration": "30",
-                "averageHeartRate": "120"},
+            {
+                "duration": 20,
+                "intensity": 3,
+                "sleepScore": 80,
+                "startTime": "2025-07-09T14:48:00.00000Z"
+            },
             {"startTime": "bad-date", "duration": "bad", "averageHeartRate": "bad"}
         ]
         with self.app.test_request_context():
@@ -103,9 +110,10 @@ class TestIntegrationWorkoutsController(unittest.TestCase):
     def test_save_workouts_exception(self, mock_repo):
         mock_repo.save_many.side_effect = Exception('Test exception')
         data = [{
-            "startTime": "2025-07-08T15:48:00.00000Z",
-            "duration": "30",
-            "averageHeartRate": "120"
+            "duration": 20,
+            "intensity": 3,
+            "sleepScore": 80,
+            "startTime": "2025-07-09T14:48:00.00000Z"
         }]
         with self.app.test_request_context():
             response = self.client.post(

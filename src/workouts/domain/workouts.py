@@ -1,27 +1,46 @@
 from datetime import datetime
+from enum import Enum
 
 from src.common.domain import Error, Response, Status
 from src.constants import DATE_TIME_FORMAT
 
 
+class Mood(Enum):
+    PROUD = 0                  # Euphoric, accomplished
+    FRUSTRATED = 1             # Disappointed, annoyed
+    CALM = 2                   # Serene, focused
+    STRESSED = 3               # Anxious, pressured
+    MOTIVATED = 4               # Happy, motivated, upbeat
+    DEMOTIVATED = 5             # Apathetic, unmotivated
+    VIGOROUS = 6               # Energetic, powerful
+    DRAINED = 7                # Tired, fatigued
+    NEUTRAL = 8                # No strong emotion
+    INJURED = 9               # Physical discomfort
+
+
 class WorkoutKeys:
     START = "startTime"
     DURATION = "duration"
-    AVERAGE_HEART_RATE = "averageHeartRate"
+    INTENSITY = "intensity"
+    MOOD = "mood"
+    SLEEP_SCORE = "sleepScore"
 
 
 class Workout:
-    def __init__(self, start: datetime, duration: int, average_heart_rate: float):
+    def __init__(self, start: datetime, duration: int, intensity: int, sleep_score: int, mood: Mood):
         self.start = start
         self.duration = duration
-        self.average_heart_rate = average_heart_rate
+        self.intensity = intensity
+        self.sleep_score = sleep_score
+        self.mood = mood
 
     def to_json(self):
         return {
             WorkoutKeys.START: self.start.strftime(DATE_TIME_FORMAT),
             WorkoutKeys.DURATION: self.duration,
-            WorkoutKeys.AVERAGE_HEART_RATE: self.average_heart_rate
-        }
+            WorkoutKeys.INTENSITY: self.intensity,
+            WorkoutKeys.SLEEP_SCORE: self.sleep_score,
+            WorkoutKeys.MOOD: self.mood.name}
 
 
 class Warning(Error):

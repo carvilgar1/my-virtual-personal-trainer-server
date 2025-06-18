@@ -3,7 +3,7 @@ from typing import Iterator
 
 from pymongo import MongoClient
 
-from src.workouts.domain.workouts import Workout
+from src.workouts.domain.workouts import Mood, Workout
 from src.workouts.domain.workouts_repository import WorkoutsRepository
 
 
@@ -22,7 +22,9 @@ class WorkoutsMongoDBRepository(WorkoutsRepository):
                 'userId': user_id,
                 'startTime': workout.start,
                 'duration': workout.duration,
-                'averageHeartRate': workout.average_heart_rate
+                'intensity': workout.intensity,
+                'sleepScore': workout.sleep_score,
+                'mood': workout.mood.value
             }
 
         batch_size = 500
@@ -56,5 +58,7 @@ class WorkoutsMongoDBRepository(WorkoutsRepository):
         return Workout(
             start=workout_data['startTime'],
             duration=workout_data['duration'],
-            average_heart_rate=workout_data['averageHeartRate']
+            intensity=workout_data['intensity'],
+            sleep_score=workout_data['sleepScore'],
+            mood=Mood(workout_data['mood'])
         )

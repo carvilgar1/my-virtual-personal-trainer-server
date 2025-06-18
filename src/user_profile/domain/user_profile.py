@@ -9,6 +9,7 @@ class Gender(Enum):
     MALE = 0
     FEMALE = 1
     OTHER = 2
+    UNSPECIFIED = 3
 
 
 class ActivityLevel(Enum):
