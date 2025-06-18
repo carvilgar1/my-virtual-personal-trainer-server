@@ -168,3 +168,5 @@ cython_debug/
 
 # MongoDB init script
 init-db.js
+
+models/*

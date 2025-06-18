@@ -1,0 +1,10 @@
+{
+    "MODEL_NOT_FOUND": {
+        "en": "The specified model was not found",
+        "es": "El modelo especificado no fue encontrado"
+    },
+    "INSUFFICIENT_WORKOUTS": {
+        "en": "Insufficient workouts to make a prediction",
+        "es": "Entrenamientos insuficientes para hacer una predicción"
+    }
+}

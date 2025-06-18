@@ -30,8 +30,6 @@ class TestWorkoutsMongoDBRepository(unittest.TestCase):
         repo.save_many(user_id, workouts)
 
         # Assert
-        mock_collection.delete_many.assert_called_once_with(
-            {'userId': user_id})
         # Should call insert_many once with both workouts
         inserted = [
             {
@@ -71,8 +69,6 @@ class TestWorkoutsMongoDBRepository(unittest.TestCase):
         repo.save_many(user_id, workouts)
 
         # Assert
-        mock_collection.delete_many.assert_called_once_with(
-            {'userId': user_id})
         # Should call insert_many 3 times (500, 500, 200)
         self.assertEqual(mock_collection.insert_many.call_count, 3)
         # Check batch sizes
@@ -97,8 +93,6 @@ class TestWorkoutsMongoDBRepository(unittest.TestCase):
         repo.save_many(user_id, workouts)
 
         # Assert
-        mock_collection.delete_many.assert_called_once_with(
-            {'userId': user_id})
         mock_collection.insert_many.assert_not_called()
 
     @patch('src.workouts.infrastructure.workouts_mongodb_repository.MongoClient')

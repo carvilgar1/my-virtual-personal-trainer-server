@@ -14,9 +14,6 @@ class WorkoutsMongoDBRepository(WorkoutsRepository):
         self.collection = self.db['workouts']
 
     def save_many(self, user_id: str, workouts: list[Workout]) -> None:
-
-        self.collection.delete_many({'userId': user_id})
-
         def build_query(workout: Workout) -> dict:
             return {
                 'userId': user_id,
@@ -42,6 +39,20 @@ class WorkoutsMongoDBRepository(WorkoutsRepository):
             {'userId': user_id},
             {'_id': 0, 'userId': 0}
         ).skip(skip).limit(page_size))
+        return workouts
+
+    def retrieve_last_n_workouts(self, user_id: str, n: int) -> Iterator[Workout]:
+        workouts = (self.build_workout(workout) for workout in self.collection.find(
+            {'userId': user_id},
+            {'_id': 0, 'userId': 0}
+        ).sort('startTime', -1).limit(n))
+        return workouts
+
+    def retrieve_all_workouts(self, user_id: str) -> Iterator[Workout]:
+        workouts = (self.build_workout(workout) for workout in self.collection.find(
+            {'userId': user_id},
+            {'_id': 0, 'userId': 0}
+        ))
         return workouts
 
     def retrieve_workouts_by_dates(self, user_id: str, start: datetime, end: datetime) -> Iterator[Workout]:

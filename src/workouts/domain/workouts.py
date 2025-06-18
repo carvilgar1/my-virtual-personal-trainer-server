@@ -34,6 +34,17 @@ class Workout:
         self.sleep_score = sleep_score
         self.mood = mood
 
+    def get_day_of_week(self) -> str:
+        return self.start.strftime("%A").lower()
+
+    def get_time_of_day(self) -> str:
+        if self.start.hour < 12:
+            return "early_morning"
+        elif self.start.hour < 18:
+            return "afternoon"
+        else:
+            return "evening"
+
     def to_json(self):
         return {
             WorkoutKeys.START: self.start.strftime(DATE_TIME_FORMAT),

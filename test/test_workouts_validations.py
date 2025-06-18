@@ -1,10 +1,10 @@
-from datetime import datetime
 import unittest
+from datetime import datetime
 from unittest.mock import Mock, patch
 
-from src.workouts.application.validations import (
-    parse_workout, validate_workout)
-from src.workouts.domain.workouts import Workout, Mood
+from src.workouts.application.validations import (parse_workout,
+                                                  validate_workout)
+from src.workouts.domain.workouts import Mood, Workout
 
 DUMMY_LANGUAGE = "en"
 DUMMY_WORKOUT_JSON = {
@@ -17,7 +17,7 @@ DUMMY_WORKOUT_JSON = {
 
 
 class TestValidateWorkout(unittest.TestCase):
-    
+
     def test_valid_workout(self):
         workout = Workout(
             start="2025-07-09T14:48:00.000000+0000",
@@ -28,10 +28,10 @@ class TestValidateWorkout(unittest.TestCase):
         )
         self.assertIsNone(validate_workout(workout, DUMMY_LANGUAGE))
 
-    
     def test_invalid_duration(self):
         workout = Workout(
-            start=datetime.strptime("2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
+            start=datetime.strptime(
+                "2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
             duration=0,
             intensity=3,
             mood=Mood.NEUTRAL,
@@ -42,10 +42,10 @@ class TestValidateWorkout(unittest.TestCase):
         self.assertTrue(
             any(error.code == "INVALID_DURATION" for error in result.errors))
 
-    
     def test_invalid_intensity(self):
         workout = Workout(
-            start=datetime.strptime("2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
+            start=datetime.strptime(
+                "2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
             duration=20,
             intensity=6,  # Invalid intensity
             mood=Mood.NEUTRAL,
@@ -56,10 +56,10 @@ class TestValidateWorkout(unittest.TestCase):
         self.assertTrue(
             any(error.code == "INVALID_INTENSITY" for error in result.errors))
 
-    
     def test_invalid_sleep_score(self):
         workout = Workout(
-            start=datetime.strptime("2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
+            start=datetime.strptime(
+                "2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
             duration=20,
             intensity=3,
             mood=Mood.NEUTRAL,
@@ -70,10 +70,10 @@ class TestValidateWorkout(unittest.TestCase):
         self.assertTrue(
             any(error.code == "INVALID_SLEEP_SCORE" for error in result.errors))
 
-    
     def test_multiple_errors(self):
         workout = Workout(
-            start=datetime.strptime("2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
+            start=datetime.strptime(
+                "2025-07-09T14:48:00.000000+0000", "%Y-%m-%dT%H:%M:%S.%f%z"),
             duration=0,
             intensity=6,  # Invalid intensity
             mood=Mood.NEUTRAL,
@@ -88,7 +88,7 @@ class TestValidateWorkout(unittest.TestCase):
 
 
 class TestParseWorkout(unittest.TestCase):
-    
+
     def test_parse_workout_valid(self):
         workout_json = DUMMY_WORKOUT_JSON
         workout, warning = parse_workout(workout_json, DUMMY_LANGUAGE)
