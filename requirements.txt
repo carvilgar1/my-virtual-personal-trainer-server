@@ -3,7 +3,7 @@ Authlib==1.4.1
 pymongo==4.11
 PyJWT==2.10.1
 bcrypt==4.2.1
-tensorflow==2.19.0
+tensorflow==2.15.0
 joblib
 scikit-learn
 mongomock
