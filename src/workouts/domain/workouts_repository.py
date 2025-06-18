@@ -1,6 +1,7 @@
 
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Iterator
 
 from src.user_profile.domain.user_profile import UserProfile
 from src.workouts.domain.workouts import Workout
@@ -17,4 +18,12 @@ class WorkoutsRepository(ABC):
 
     @abstractmethod
     def retrieve_workouts_by_dates(self, user_id: str, start: datetime, end: datetime) -> list[Workout]:
+        pass
+
+    @abstractmethod
+    def retrieve_last_n_workouts(self, user_id: str, n: int) -> list[Workout]:
+        pass
+
+    @abstractmethod
+    def retrieve_all_workouts(self, user_id: str) -> Iterator[Workout]:
         pass

@@ -90,7 +90,7 @@ class TestWorkoutsControllers(unittest.TestCase):
 
     def test_retrieve_workouts_by_pages_invalid_page(self):
         self.mock_repo.retrieve_workouts.return_value = [self.dummy_workout]
-        response, status = controllers.retrieve_workouts_by_pages(
+        _, status = controllers.retrieve_workouts_by_pages(
             self.user, self.mock_repo, -5, 2000
         )
         self.assertEqual(status, 200)
@@ -151,17 +151,23 @@ class TestWorkoutsControllers(unittest.TestCase):
         data = [
             {
                 "duration": 105,
-                "averageHeartRate": 888.0,
+                "intensity": 5,
+                "mood": "PROUD",
+                "sleepScore": 90,
                 "startTime": "2025-07-08T15:48:00.00000Z"
             },
             {
                 "duration": 20,
-                "averageHeartRate": "88",
+                "intensity": 5,
+                "mood": "PROUD",
+                "sleepScore": 90,
                 "startTime": "2025-07-09T14:48:00.00000Z"
             },
             {
                 "duration": 20,
-                "averageHeartRate": "88",
+                "intensity": 50,
+                "mood": "PROUD",
+                "sleepScore": 90,
                 "startTime": "2025-07-09T14:48:00.00000Z"
             }
         ]
@@ -175,7 +181,6 @@ class TestWorkoutsControllers(unittest.TestCase):
     @patch('src.workouts.application.validations.parse_workout')
     @patch('src.workouts.application.validations.validate_workout')
     def test_process_workout_data_all_errors(self, mock_validate, mock_parse):
-        # Todos los workouts con error de parseo
         mock_parse.side_effect = [
             (None, self.dummy_warning),
             (None, self.dummy_warning)

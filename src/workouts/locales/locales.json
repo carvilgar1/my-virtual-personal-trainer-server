@@ -22,5 +22,13 @@
     "INVALID_DATE_RANGE": {
         "en": "Invalid date range, start date must be before end date",
         "es": "Rango de fechas inválido, la fecha de inicio debe ser anterior a la fecha de finalización"
+    },
+    "INVALID_INTENSITY": {
+        "en": "Invalid intensity, must be a number between 1 and 5",
+        "es": "Intensidad inválida, debe ser un número entre 1 y 5"
+    },
+    "INVALID_SLEEP_SCORE": {
+        "en": "Invalid sleep score, must be a number between 0 and 100",
+        "es": "Puntuación de sueño inválida, debe ser un número entre 0 y 100"
     }
 }
